@@ -370,9 +370,9 @@ function buildSystem(emp) {
   const li = getLevelInfo(emp.xp);
   let sys = emp.baseSystem;
   sys += `\n\nТвой уровень: ${li.name} (${li.lv}).`;
-  if (li.lv >= 3) sys += ' Давай развёрнутые профессиональные ответы.';
-  if (li.lv >= 4) sys += ' Предлагай нестандартные решения, указывай на риски.';
-  if (li.lv >= 5) sys += ' Давай стратегические инсайты, менторствуй коллег.';
+  if (li.lv >= 3) sys += ' Развёрнутые ответы.';
+  if (li.lv >= 4) sys += ' Нестандартные решения, указывай риски.';
+  if (li.lv >= 5) sys += ' Стратегические инсайты.';
   if (emp.knowledge.length > 0) {
     sys += '\n\nТвои знания:\n';
     emp.knowledge.forEach(k => { sys += `— ${k.topic}: ${k.content}\n`; });
@@ -489,7 +489,7 @@ function showTyping(emp) {
 function rmTyping(id) { document.getElementById('tp-'+id)?.remove(); }
 function scrollDown() { const b = document.getElementById('msgs'); b.scrollTop = b.scrollHeight; }
 function fmt(t) { return t.replace(/```(\w*)\n?([\s\S]*?)```/g,'<pre>$2</pre>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>'); }
-function buildCtx() { return chatHistory.slice(-16).map(m => m.role==='user' ? `[Владелец]: ${m.content}` : `[${m.name}/${m.role}]: ${m.content}`).join('\n'); }
+function buildCtx() { return chatHistory.slice(-10).map(m => m.role==='user' ? `[Владелец]: ${m.content}` : `[${m.name}/${m.role}]: ${m.content}`).join('\n'); }
 
 const kwMap = {0:['задача','план','стратегия','распредели','цель','приоритет'],1:['контент','пост','текст','копирайт','напиши','написать'],2:['автопостинг','автоматизац','расписание','n8n','make','скрипт'],3:['одежда','платье','куртка','размер','скрипт продаж'],4:['телефон','ноутбук','техника','смартфон','гаджет','iphone','samsung'],5:['заказ','доставка','статус','возврат','crm'],6:['бот','webhook','aiogram','api','интеграц','уведомлен'],7:['реклама','трафик','подписчик','посев','пиар','cpm','таргет','медиаплан'],8:['аналитик','метрик','охват','конверсия','roi','отчёт','tgstat']};
 
@@ -510,7 +510,7 @@ async function askEmp(emp, isInt=false) {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, system: buildSystem(emp), messages: [{role:'user',content:prompt}] })
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 600, system: buildSystem(emp), messages: [{role:'user',content:prompt}] })
     });
     const data = await res.json();
     const reply = data.content?.[0]?.text || (data.error ? `Ошибка: ${data.error.message}` : '...');
