@@ -175,6 +175,7 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
       </div>
     </div>
     <div class="topbar-actions">
+      <button class="tbtn" onclick="resetState()" title="Сбросить прогресс">↺</button>
       <button class="tbtn" onclick="openModal('modalTeach')">📚 Обучить</button>
       <button class="tbtn pri" onclick="openModal('modalHire')">+ Нанять</button>
     </div>
@@ -313,6 +314,58 @@ const employees = [
 const deptOrder = ['Управление','Контент','Маркетинг','Продажи','Операции','Автоматизация','Аналитика'];
 let chatHistory = [], busy = false, teachTarget = null;
 
+// ── PERSISTENCE ─────────────────────────────────────────
+const SAVE_KEY = 'holding_employees_v2';
+
+function saveState() {
+  // Save only mutable fields — baseSystem stays in code
+  const data = employees.map(e => ({
+    id: e.id,
+    xp: e.xp,
+    learnedSkills: e.learnedSkills,
+    knowledge: e.knowledge,
+    // For custom-hired employees, save all fields
+    _custom: e._custom || false,
+    name: e._custom ? e.name : undefined,
+    role: e._custom ? e.role : undefined,
+    dept: e._custom ? e.dept : undefined,
+    emoji: e._custom ? e.emoji : undefined,
+    baseSkills: e._custom ? e.baseSkills : undefined,
+    baseSystem: e._custom ? e.baseSystem : undefined,
+  }));
+  localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    saved.forEach(s => {
+      if (s._custom) {
+        // Restore custom-hired employee if not already in array
+        if (!employees.find(e => e.id === s.id)) {
+          employees.push({
+            id: s.id, name: s.name, role: s.role, dept: s.dept,
+            emoji: s.emoji, xp: s.xp, baseSkills: s.baseSkills,
+            learnedSkills: s.learnedSkills, knowledge: s.knowledge,
+            baseSystem: s.baseSystem, _custom: true
+          });
+        }
+      } else {
+        const emp = employees.find(e => e.id === s.id);
+        if (emp) {
+          emp.xp = s.xp || 0;
+          emp.learnedSkills = s.learnedSkills || [];
+          emp.knowledge = s.knowledge || [];
+        }
+      }
+    });
+  } catch(e) { console.warn('State load error', e); }
+}
+
+loadState();
+
 function buildSystem(emp) {
   const li = getLevelInfo(emp.xp);
   let sys = emp.baseSystem;
@@ -334,6 +387,7 @@ function gainXP(emp, amount = 1) {
   const after = getLevelInfo(emp.xp);
   renderSidebar();
   if (after.lv > before.lv) addLevelUp(emp, after);
+  saveState();
 }
 
 function addLevelUp(emp, li) {
@@ -515,6 +569,7 @@ function doTeach(emp, topic, content) {
   const skillWord = topic.split(' ').find(w=>w.length>4) || topic;
   if (!emp.learnedSkills.includes(skillWord)) emp.learnedSkills.push(skillWord);
   gainXP(emp, 2);
+  saveState();
   const c = gc(emp.id); const li = getLevelInfo(emp.xp); const box = document.getElementById('msgs');
   const row = document.createElement('div'); row.className = 'mrow';
   row.innerHTML = `<div class="mav" style="background:${c.bg};color:${c.tc}">${emp.emoji}</div>
@@ -564,17 +619,29 @@ function hireEmp() {
   const id = Date.now();
   const allNames = employees.map(e=>e.name).join(', ');
   const baseSystem = desc || `Ты — ${name}, ${role} холдинга. В чате с командой: ${allNames}. Говори по-русски, профессионально. Выполняй задачи по специальности. До 150 слов.`;
-  employees.push({id, name, role, dept, emoji, xp:0, baseSkills:skills, learnedSkills:[], knowledge:[], baseSystem});
+  employees.push({id, name, role, dept, emoji, xp:0, baseSkills:skills, learnedSkills:[], knowledge:[], baseSystem, _custom:true});
   closeModal('modalHire');
   ['hName','hRole','hDept','hEmoji','hSkills','hDesc'].forEach(i=>document.getElementById(i).value='');
+  saveState();
   renderSidebar(); addSys(`${emoji} ${name} (${role}) принят — уровень 1, Новичок`); switchTab('chat');
+}
+
+function resetState() {
+  if (!confirm('Сбросить прогресс всей команды? XP, знания и нанятые сотрудники будут удалены.')) return;
+  localStorage.removeItem(SAVE_KEY);
+  location.reload();
 }
 
 function init() {
   renderSidebar();
+  const hasSaved = !!localStorage.getItem(SAVE_KEY);
   setTimeout(()=>{
     addSys('Холдинг запущен — все сотрудники онлайн');
-    addSys('Каждый ответ +1 XP · Обучение +2 XP · 5 XP = новый уровень');
+    if (hasSaved) {
+      addSys('✅ Прогресс команды восстановлен из памяти');
+    } else {
+      addSys('Каждый ответ +1 XP · Обучение +2 XP · 5 XP = новый уровень');
+    }
   }, 80);
 }
 
