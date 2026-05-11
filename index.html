@@ -84,6 +84,14 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
 .bub.int { background: var(--amber2); border-color: rgba(245,166,35,0.2); border-bottom-left-radius: 3px; }
 .bub.learn { background: var(--green2); border-color: rgba(46,204,138,0.2); border-bottom-left-radius: 3px; }
 .bub pre { font-family: 'Menlo', 'Monaco', monospace; font-size: 11px; background: var(--bg); border: 0.5px solid var(--border2); border-radius: var(--radius-sm); padding: 8px; margin-top: 6px; white-space: pre-wrap; overflow-x: auto; }
+
+.artifact-block { margin-top: 8px; border: 1px solid rgba(79,142,247,0.35); border-radius: var(--radius); overflow: hidden; background: var(--bg); }
+.artifact-header { display: flex; align-items: center; justify-content: space-between; padding: 7px 12px; background: var(--blue3); border-bottom: 0.5px solid rgba(79,142,247,0.25); }
+.artifact-label { font-size: 10px; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: .08em; display: flex; align-items: center; gap: 5px; }
+.artifact-copy { font-size: 11px; padding: 3px 10px; border-radius: 5px; border: 0.5px solid var(--blue2); background: transparent; color: var(--blue); cursor: pointer; font-family: var(--font); transition: all .15s; }
+.artifact-copy:hover { background: var(--blue2); }
+.artifact-copy.copied { color: var(--green); border-color: rgba(46,204,138,0.3); }
+.artifact-body { padding: 12px; font-size: 12.5px; line-height: 1.65; color: var(--text); white-space: pre-wrap; word-break: break-word; max-height: 320px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--bg3) transparent; }
 .itag { font-size: 10px; color: var(--amber); margin-bottom: 3px; display: flex; align-items: center; gap: 4px; }
 .ltag { font-size: 10px; color: var(--green); margin-bottom: 3px; display: flex; align-items: center; gap: 4px; }
 .trow { display: flex; gap: 9px; align-items: center; }
@@ -300,15 +308,33 @@ function getLevelInfo(xp) {
 }
 
 const employees = [
-  {id:0,name:'Игорь',role:'Генеральный директор',dept:'Управление',emoji:'🏢',xp:8,baseSkills:['стратегия','координация','планирование'],learnedSkills:[],knowledge:[],baseSystem:`Ты — Игорь, CEO холдинга по раскрутке Telegram-каналов и продажам техники/одежды. Распределяй задачи между: Рита(контент), Кирилл(автоматизация), Даша(продажи одежда), Толя(продажи техника), Зина(заказы), Вова(боты), Настя(реклама), Лёша(аналитика). Говори чётко, как CEO. До 150 слов.`},
-  {id:1,name:'Рита',role:'Контент-директор',dept:'Контент',emoji:'✍️',xp:6,baseSkills:['посты','контент-план','копирайтинг'],learnedSkills:[],knowledge:[],baseSystem:`Ты — Рита, контент-директор. Пишешь посты, контент-планы, описания товаров для Telegram-каналов. Если просят пост — пиши готовый. До 150 слов.`},
-  {id:2,name:'Кирилл',role:'SMM-автоматизация',dept:'Автоматизация',emoji:'⚙️',xp:4,baseSkills:['n8n','Make','Telegram API','автопостинг'],learnedSkills:[],knowledge:[],baseSystem:`Ты — Кирилл, автоматизация SMM. Настраиваешь автопостинг, n8n/Make/Python. Описывай схемы: триггер→действие→результат. До 150 слов.`},
-  {id:3,name:'Даша',role:'Менеджер продаж — одежда',dept:'Продажи',emoji:'👗',xp:5,baseSkills:['скрипты продаж','возражения','апсейл'],learnedSkills:[],knowledge:[],baseSystem:`Ты — Даша, продажи одежды через Telegram. Обрабатываешь заявки, делаешь апсейлы, составляешь скрипты. Координируй с Зиной. До 150 слов.`},
-  {id:4,name:'Толя',role:'Менеджер продаж — техника',dept:'Продажи',emoji:'📱',xp:5,baseSkills:['техника','смартфоны','скрипты'],learnedSkills:[],knowledge:[],baseSystem:`Ты — Толя, продажи техники через Telegram. Консультируешь, сравниваешь модели, закрываешь сделки. Координируй с Зиной. До 150 слов.`},
-  {id:5,name:'Зина',role:'Руководитель отдела заказов',dept:'Операции',emoji:'📦',xp:7,baseSkills:['CRM','заказы','логистика','регламенты'],learnedSkills:[],knowledge:[],baseSystem:`Ты — Зина, руководитель отдела заказов. Управляешь потоком заказов, составляешь регламенты и CRM-структуры. До 150 слов.`},
-  {id:6,name:'Вова',role:'Разработчик ботов',dept:'Автоматизация',emoji:'🤖',xp:4,baseSkills:['aiogram','Python','Telegram Bot API'],learnedSkills:[],knowledge:[],baseSystem:`Ты — Вова, разработчик Telegram-ботов. Создаёшь боты для заказов, уведомлений, автоответов. Давай конкретную архитектуру. До 150 слов.`},
-  {id:7,name:'Настя',role:'Трафик-менеджер',dept:'Маркетинг',emoji:'📣',xp:5,baseSkills:['Telegram Ads','посевы','ВП','медиаплан'],learnedSkills:[],knowledge:[],baseSystem:`Ты — Настя, трафик-менеджер. Привлекаешь подписчиков через Telegram Ads, посевы, ВП. Считаешь CPM/CPS, строишь медиапланы. До 150 слов.`},
-  {id:8,name:'Лёша',role:'Аналитик',dept:'Аналитика',emoji:'📊',xp:6,baseSkills:['Tgstat','Telemetr','ROI','отчёты'],learnedSkills:[],knowledge:[],baseSystem:`Ты — Лёша, аналитик. Считаешь метрики каналов, конверсии, ROI. Строишь отчёты и дашборды. До 150 слов.`},
+  {id:0,name:'Игорь',role:'Генеральный директор',dept:'Управление',emoji:'🏢',xp:8,baseSkills:['стратегия','координация','планирование'],learnedSkills:[],knowledge:[],baseSystem:`Ты — Игорь, CEO холдинга по раскрутке Telegram-каналов и продажам техники/одежды.
+ПРАВИЛО: Всегда выдавай конкретный план действий, а не рассуждения. Распределяй задачи с именами: Рита(контент), Кирилл(автоматизация), Даша(одежда), Толя(техника), Зина(заказы), Вова(боты), Настя(реклама), Лёша(аналитика).
+Формат: сначала 1-2 предложения комментария, затем готовый план в тегах <result>ПЛАН ПО ПУНКТАМ</result>.`},
+  {id:1,name:'Рита',role:'Контент-директор',dept:'Контент',emoji:'✍️',xp:6,baseSkills:['посты','контент-план','копирайтинг'],learnedSkills:[],knowledge:[],baseSystem:`Ты — Рита, контент-директор. Специализация: посты, контент-планы, описания товаров для Telegram-каналов.
+ПРАВИЛО: Всегда пиши ГОТОВЫЙ результат. Если просят пост — пиши сам пост, если контент-план — таблицу с датами и темами.
+Формат: 1 предложение комментария, затем готовый материал в тегах <result>ГОТОВЫЙ ПОСТ ИЛИ ПЛАН</result>.`},
+  {id:2,name:'Кирилл',role:'SMM-автоматизация',dept:'Автоматизация',emoji:'⚙️',xp:4,baseSkills:['n8n','Make','Telegram API','автопостинг'],learnedSkills:[],knowledge:[],baseSystem:`Ты — Кирилл, специалист по автоматизации SMM. Настраиваешь автопостинг, n8n/Make/Python.
+ПРАВИЛО: Всегда давай ГОТОВУЮ схему или код, а не объяснения. Схемы формата: Триггер → Шаг 1 → Шаг 2 → Результат.
+Формат: 1 предложение комментария, затем готовая схема/код в тегах <result>СХЕМА ИЛИ КОД</result>.`},
+  {id:3,name:'Даша',role:'Менеджер продаж — одежда',dept:'Продажи',emoji:'👗',xp:5,baseSkills:['скрипты продаж','возражения','апсейл'],learnedSkills:[],knowledge:[],baseSystem:`Ты — Даша, менеджер продаж одежды через Telegram.
+ПРАВИЛО: Всегда давай ГОТОВЫЙ скрипт или сообщение для отправки клиенту. Не объясняй — сразу пиши текст.
+Формат: 1 предложение комментария, затем готовый скрипт/сообщение в тегах <result>ГОТОВЫЙ ТЕКСТ ДЛЯ КЛИЕНТА</result>.`},
+  {id:4,name:'Толя',role:'Менеджер продаж — техника',dept:'Продажи',emoji:'📱',xp:5,baseSkills:['техника','смартфоны','скрипты'],learnedSkills:[],knowledge:[],baseSystem:`Ты — Толя, менеджер продаж техники через Telegram.
+ПРАВИЛО: Всегда давай ГОТОВЫЙ скрипт, сравнение или карточку товара. Не рассказывай — пиши готовый текст.
+Формат: 1 предложение комментария, затем готовый материал в тегах <result>ГОТОВЫЙ СКРИПТ / КАРТОЧКА / СРАВНЕНИЕ</result>.`},
+  {id:5,name:'Зина',role:'Руководитель отдела заказов',dept:'Операции',emoji:'📦',xp:7,baseSkills:['CRM','заказы','логистика','регламенты'],learnedSkills:[],knowledge:[],baseSystem:`Ты — Зина, руководитель отдела заказов.
+ПРАВИЛО: Всегда выдавай ГОТОВЫЙ регламент, шаблон CRM или чек-лист — не обсуждение.
+Формат: 1 предложение комментария, затем готовый документ в тегах <result>РЕГЛАМЕНТ / ЧЕК-ЛИСТ / ШАБЛОН</result>.`},
+  {id:6,name:'Вова',role:'Разработчик ботов',dept:'Автоматизация',emoji:'🤖',xp:4,baseSkills:['aiogram','Python','Telegram Bot API'],learnedSkills:[],knowledge:[],baseSystem:`Ты — Вова, разработчик Telegram-ботов на Python/aiogram.
+ПРАВИЛО: Всегда давай ГОТОВЫЙ код или архитектуру с конкретными командами. Не объясняй — пиши код.
+Формат: 1 предложение комментария, затем готовый код в тегах <result>КОД БОТА</result>.`},
+  {id:7,name:'Настя',role:'Трафик-менеджер',dept:'Маркетинг',emoji:'📣',xp:5,baseSkills:['Telegram Ads','посевы','ВП','медиаплан'],learnedSkills:[],knowledge:[],baseSystem:`Ты — Настя, трафик-менеджер. Привлекаешь подписчиков через Telegram Ads, посевы, ВП.
+ПРАВИЛО: Всегда давай ГОТОВЫЙ медиаплан, текст объявления или список каналов — не советы.
+Формат: 1 предложение комментария, затем готовый материал в тегах <result>МЕДИАПЛАН / ОБЪЯВЛЕНИЕ / СПИСОК</result>.`},
+  {id:8,name:'Лёша',role:'Аналитик',dept:'Аналитика',emoji:'📊',xp:6,baseSkills:['Tgstat','Telemetr','ROI','отчёты'],learnedSkills:[],knowledge:[],baseSystem:`Ты — Лёша, аналитик Telegram-каналов.
+ПРАВИЛО: Всегда выдавай ГОТОВЫЙ отчёт, таблицу метрик или расчёт ROI — не описание процесса.
+Формат: 1 предложение комментария, затем готовый отчёт/таблицу в тегах <result>ОТЧЁТ / ТАБЛИЦА / РАСЧЁТ</result>.`},
 ];
 
 const deptOrder = ['Управление','Контент','Маркетинг','Продажи','Операции','Автоматизация','Аналитика'];
@@ -465,10 +491,13 @@ function addBub(emp, text, type='them') {
   const c = gc(emp.id); const li = getLevelInfo(emp.xp); const box = document.getElementById('msgs');
   const row = document.createElement('div'); row.className = 'mrow';
   const tag = type==='int' ? `<div class="itag">🔗 внутри команды</div>` : type==='learn' ? `<div class="ltag">📚 применяет знания</div>` : '';
+  const {comment, artifact} = parseArtifact(text);
+  const commentHtml = comment ? `<div class="bub ${type==='int'?'int':type==='learn'?'learn':'them'}">${fmt(comment)}</div>` : '';
+  const artifactHtml = artifact ? makeArtifactBlock(artifact, emp.name) : '';
   row.innerHTML = `<div class="mav" style="background:${c.bg};color:${c.tc}">${emp.emoji}</div>
     <div class="mbody">
       <div class="msender">${emp.name} · ${emp.role} <span class="lv-tag">ур.${li.lv} ${li.name}</span></div>
-      ${tag}<div class="bub ${type==='int'?'int':type==='learn'?'learn':'them'}">${fmt(text)}</div>
+      ${tag}${commentHtml}${artifactHtml}
     </div>`;
   box.appendChild(row); scrollDown();
 }
@@ -489,6 +518,36 @@ function showTyping(emp) {
 function rmTyping(id) { document.getElementById('tp-'+id)?.remove(); }
 function scrollDown() { const b = document.getElementById('msgs'); b.scrollTop = b.scrollHeight; }
 function fmt(t) { return t.replace(/```(\w*)\n?([\s\S]*?)```/g,'<pre>$2</pre>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>'); }
+
+function parseArtifact(text) {
+  const match = text.match(/<result>([\s\S]*?)<\/result>/i);
+  if (!match) return { comment: text, artifact: null };
+  const artifact = match[1].trim();
+  const comment = text.replace(/<result>[\s\S]*?<\/result>/i, '').trim();
+  return { comment, artifact };
+}
+
+function makeArtifactBlock(artifact, empName) {
+  const id = 'art-' + Math.random().toString(36).slice(2,8);
+  const escaped = artifact.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const formatted = escaped.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+  return `<div class="artifact-block">
+    <div class="artifact-header">
+      <span class="artifact-label">📄 Готовый результат · ${empName}</span>
+      <button class="artifact-copy" onclick="copyArtifact('${id}',this)">Копировать</button>
+    </div>
+    <div class="artifact-body" id="${id}">${formatted}</div>
+  </div>`;
+}
+
+function copyArtifact(id, btn) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  navigator.clipboard.writeText(el.innerText).then(() => {
+    btn.textContent = '✓ Скопировано'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Копировать'; btn.classList.remove('copied'); }, 2000);
+  });
+}
 function buildCtx() { return chatHistory.slice(-10).map(m => m.role==='user' ? `[Владелец]: ${m.content}` : `[${m.name}/${m.role}]: ${m.content}`).join('\n'); }
 
 const kwMap = {0:['задача','план','стратегия','распредели','цель','приоритет'],1:['контент','пост','текст','копирайт','напиши','написать'],2:['автопостинг','автоматизац','расписание','n8n','make','скрипт'],3:['одежда','платье','куртка','размер','скрипт продаж'],4:['телефон','ноутбук','техника','смартфон','гаджет','iphone','samsung'],5:['заказ','доставка','статус','возврат','crm'],6:['бот','webhook','aiogram','api','интеграц','уведомлен'],7:['реклама','трафик','подписчик','посев','пиар','cpm','таргет','медиаплан'],8:['аналитик','метрик','охват','конверсия','roi','отчёт','tgstat']};
@@ -505,12 +564,12 @@ async function askEmp(emp, isInt=false) {
   showTyping(emp);
   const ctx = buildCtx();
   const hasKnow = emp.knowledge.length > 0;
-  const prompt = `История:\n${ctx}\n\nОтветь по своей роли.${hasKnow?' Применяй обученные знания если релевантно.':''} Упоминай коллег по имени если нужна помощь. Кратко и конкретно.`;
+  const prompt = `История:\n${ctx}\n\nОтветь по своей роли. Дай КОНКРЕТНЫЙ результат (пост, скрипт, план, код, таблицу) в тегах <result>...</result>.${hasKnow?' Применяй обученные знания если релевантно.':''} Перед тегом — 1 предложение комментария.`;
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 600, system: buildSystem(emp), messages: [{role:'user',content:prompt}] })
+      body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 1000, system: buildSystem(emp), messages: [{role:'user',content:prompt}] })
     });
     const data = await res.json();
     const reply = data.content?.[0]?.text || (data.error ? `Ошибка: ${data.error.message}` : '...');
