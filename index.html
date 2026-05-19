@@ -788,7 +788,7 @@ function init() {
 
 // ─── SCREEN SWITCH ────────────────────────
 function switchScreen(name) {
-  ['tasks','agents','integrations','log','analytics','inbox','briefing'].forEach(s => {
+  ['tasks','agents','integrations','log','analytics','inbox','briefing','themes'].forEach(s => {
     document.getElementById('s-'+s)?.classList.toggle('active', s===name);
     document.getElementById('nav-'+s)?.classList.toggle('active', s===name);
   });
@@ -1549,12 +1549,14 @@ if (API_KEY) {
 <script src="analytics.js"></script>
 <script src="inbox.js"></script>
 <script src="briefing.js"></script>
+<script src="themes.js"></script>
 <script>
 if (API_KEY) {
   initKanban();
   initAnalytics();
   initInbox();
   initBriefing();
+  initThemes();
 }
 </script>
 </body>
