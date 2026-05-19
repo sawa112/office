@@ -1536,7 +1536,13 @@ document.querySelectorAll('.modal-bg').forEach(bg=>{
 });
 
 // ─── START ────────────────────────────────
-if (API_KEY) init();
+if (API_KEY) {
+  init();
+  initKanban();
+}
 </script>
 </body>
+  <script src="memory.js"></script>
+<script src="crm.js"></script>
+<script src="kanban.js"></script>
 </html>
