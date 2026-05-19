@@ -1372,7 +1372,53 @@ async function bybitAgentTrade(action) {
   setTimeout(()=>sendTask(),200);
   addTradeLog(action==='buy'?'buy':action==='sell'?'sell':'info', `Агент: ${actions[action].slice(0,40)}...`);
 }
+  
+<!-- Instagram -->
+<div class="int-card" id="intInstagram">
+  <div class="int-head" onclick="toggleInt('Instagram')">
+    <div class="int-info">
+      <div class="int-icon" style="background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045)">📸</div>
+      <div>
+        <div class="int-name">Instagram</div>
+        <div class="int-status disconnected" id="instagramStatus">Не подключён</div>
+      </div>
+    </div>
+    <div class="toggle" id="toggleInstagram" onclick="event.stopPropagation()"></div>
+  </div>
+  <div class="int-body">
+    <div class="int-field"><label>Access Token</label>
+      <input id="igToken" type="password" placeholder="EAAxxxxxxx...">
+    </div>
+    <div class="int-field"><label>Page ID</label>
+      <input id="igPageId" placeholder="Ваш Instagram Page ID">
+    </div>
+    <button class="int-save" onclick="saveInt('Instagram')">Подключить</button>
+  </div>
+</div>
 
+<!-- WhatsApp -->
+<div class="int-card" id="intWhatsApp">
+  <div class="int-head" onclick="toggleInt('WhatsApp')">
+    <div class="int-info">
+      <div class="int-icon" style="background:#1a3d2b">💬</div>
+      <div>
+        <div class="int-name">WhatsApp Business</div>
+        <div class="int-status disconnected" id="whatsAppStatus">Не подключён</div>
+      </div>
+    </div>
+    <div class="toggle" id="toggleWhatsApp" onclick="event.stopPropagation()"></div>
+  </div>
+  <div class="int-body">
+    <div class="int-field"><label>Phone Number ID</label>
+      <input id="waPhoneId" placeholder="1234567890">
+    </div>
+    <div class="int-field"><label>Access Token</label>
+      <input id="waToken" type="password" placeholder="EAAxxxxxxx...">
+    </div>
+    <button class="int-save" onclick="saveInt('WhatsApp')">Подключить</button>
+  </div>
+</div>
+  
 // ─── SCREEN SWITCH (extended) ─────────────
 function toggleInt(key) {
   const card=document.getElementById('int'+key);
