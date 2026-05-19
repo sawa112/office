@@ -788,12 +788,13 @@ function init() {
 
 // ─── SCREEN SWITCH ────────────────────────
 function switchScreen(name) {
-  ['tasks','agents','integrations','log','analytics'].forEach(s => {
+  ['tasks','agents','integrations','log','analytics','inbox'].forEach(s => {
     document.getElementById('s-'+s)?.classList.toggle('active', s===name);
     document.getElementById('nav-'+s)?.classList.toggle('active', s===name);
   });
   if (name==='agents') renderAgents();
   if (name==='analytics') Analytics.render();
+  if (name==='inbox') Inbox.refresh();
 }
 
 // ─── TASK MODE ────────────────────────────
@@ -1545,10 +1546,12 @@ if (API_KEY) {
   <script src="memory.js"></script>
 <script src="crm.js"></script>
 <script src="kanban.js"></script>
+<script src="inbox.js">
 <script>
 if (API_KEY) {
   initKanban();
   initAnalytics();
+  initInbox();
 }
 </script>
 </body>
