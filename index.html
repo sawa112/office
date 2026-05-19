@@ -788,11 +788,12 @@ function init() {
 
 // ─── SCREEN SWITCH ────────────────────────
 function switchScreen(name) {
-  ['tasks','agents','integrations','log'].forEach(s => {
+  ['tasks','agents','integrations','log','analytics'].forEach(s => {
     document.getElementById('s-'+s)?.classList.toggle('active', s===name);
     document.getElementById('nav-'+s)?.classList.toggle('active', s===name);
   });
   if (name==='agents') renderAgents();
+  if (name==='analytics') Analytics.render();
 }
 
 // ─── TASK MODE ────────────────────────────
@@ -1545,7 +1546,10 @@ if (API_KEY) {
 <script src="crm.js"></script>
 <script src="kanban.js"></script>
 <script>
-  if (API_KEY) initKanban();
+if (API_KEY) {
+  initKanban();
+  initAnalytics();
+}
 </script>
 </body>
 </html>
