@@ -1472,6 +1472,35 @@ async function saveInt(key) {
     addLog('ok','✅ Webhook сохранён',INTEGRATIONS.Webhook.url);
     document.getElementById('intWebhook').classList.remove('open');
   }
+  
+
+  // ← ВСТАВЬ ЗДЕСЬ
+  } else if (key==='Instagram') {
+    INTEGRATIONS.Instagram = {
+      token: document.getElementById('igToken').value.trim(),
+      pageId: document.getElementById('igPageId').value.trim(),
+      active: false
+    };
+    if (!INTEGRATIONS.Instagram.token) { alert('Введите Access Token'); return; }
+    INTEGRATIONS.Instagram.active = true;
+    document.getElementById('toggleInstagram').classList.add('on');
+    updateIntStatus('instagram', true);
+    addLog('ok','✅ Instagram подключён','Готов к работе');
+    document.getElementById('intInstagram').classList.remove('open');
+
+  } else if (key==='WhatsApp') {
+    INTEGRATIONS.WhatsApp = {
+      phoneId: document.getElementById('waPhoneId').value.trim(),
+      token: document.getElementById('waToken').value.trim(),
+      active: false
+    };
+    if (!INTEGRATIONS.WhatsApp.phoneId || !INTEGRATIONS.WhatsApp.token) { alert('Заполните все поля'); return; }
+    INTEGRATIONS.WhatsApp.active = true;
+    document.getElementById('toggleWhatsApp').classList.add('on');
+    updateIntStatus('whatsApp', true);
+    addLog('ok','✅ WhatsApp Business подключён','Готов к отправке');
+    document.getElementById('intWhatsApp').classList.remove('open');
+  }
   localStorage.setItem('holding_integrations', JSON.stringify(INTEGRATIONS));
 }
 
