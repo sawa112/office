@@ -219,6 +219,52 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
 .mbtn.blue { background: var(--blue3); border-color: var(--blue2); color: var(--blue); }
 .mbtn.green { background: var(--green2); border-color: rgba(45,232,160,.25); color: var(--green); }
 
+/* ─── HISTORY SEARCH ─── */
+.hist-bar { display: flex; gap: 8px; padding: 10px 12px 4px; flex-shrink: 0; }
+.hist-inp { flex: 1; background: var(--bg2); border: 0.5px solid var(--border2); border-radius: var(--r-sm); padding: 9px 12px; font-size: 13px; font-family: var(--font); color: var(--text); outline: none; }
+.hist-inp:focus { border-color: var(--blue); }
+.hist-inp::placeholder { color: var(--text3); }
+.hist-item { margin: 3px 12px; background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--r-sm); padding: 10px 13px; cursor: pointer; transition: border-color .15s; }
+.hist-item:hover { border-color: var(--border2); }
+.hist-item-role { font-size: 10px; color: var(--text3); margin-bottom: 3px; }
+.hist-item-text { font-size: 13px; color: var(--text); line-height: 1.4; }
+.hist-item-text mark { background: var(--blue3); color: var(--blue); border-radius: 3px; padding: 0 2px; }
+.hist-item-time { font-size: 10px; color: var(--text3); margin-top: 4px; }
+.hist-empty { text-align: center; font-size: 13px; color: var(--text3); padding: 40px 20px; }
+
+/* ─── VOICE BUTTON ─── */
+.voice-btn { width: 34px; height: 34px; border-radius: 50%; background: var(--bg3); border: 0.5px solid var(--border2); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: all .2s; font-size: 16px; }
+.voice-btn.recording { background: var(--red2); border-color: var(--red); animation: pulse 1s infinite; }
+
+/* ─── SOCIAL NET CARDS ─── */
+.soc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 12px 4px; }
+.soc-card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--r-sm); padding: 12px; display: flex; flex-direction: column; gap: 6px; }
+.soc-head { display: flex; align-items: center; gap: 8px; }
+.soc-ico { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.soc-name { font-size: 13px; font-weight: 600; }
+.soc-status { font-size: 10px; }
+.soc-status.on { color: var(--green); }
+.soc-status.off { color: var(--text3); }
+.soc-toggle { margin-left: auto; }
+.bybit-card { margin: 4px 12px; background: linear-gradient(135deg, rgba(247,183,49,.08), var(--bg2)); border: 0.5px solid rgba(247,183,49,.25); border-radius: var(--r); padding: 14px; }
+.bybit-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.bybit-ico { width: 42px; height: 42px; border-radius: var(--r-sm); background: var(--amber2); display: flex; align-items: center; justify-content: center; font-size: 22px; }
+.bybit-name { font-size: 15px; font-weight: 700; }
+.bybit-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.bybit-balance { display: flex; gap: 8px; margin: 10px 0; flex-wrap: wrap; }
+.bybit-bal-item { background: var(--bg3); border: 0.5px solid var(--border2); border-radius: var(--r-sm); padding: 8px 12px; flex: 1; min-width: 100px; }
+.bybit-bal-lbl { font-size: 10px; color: var(--text3); }
+.bybit-bal-val { font-size: 15px; font-weight: 700; color: var(--amber); margin-top: 2px; }
+.bybit-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.bybit-act-btn { padding: 7px 12px; border-radius: var(--r-sm); border: 0.5px solid var(--border2); background: var(--bg3); color: var(--text2); font-size: 12px; font-weight: 600; cursor: pointer; font-family: var(--font); transition: all .15s; }
+.bybit-act-btn:hover { border-color: var(--amber); color: var(--amber); }
+.bybit-act-btn.danger { border-color: rgba(240,80,80,.3); color: var(--red); }
+.trade-log { margin-top: 10px; max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+.trade-item { font-size: 11px; padding: 5px 9px; border-radius: 6px; background: var(--bg3); color: var(--text2); display: flex; justify-content: space-between; }
+.trade-item.buy { border-left: 2px solid var(--green); }
+.trade-item.sell { border-left: 2px solid var(--red); }
+.trade-item.info { border-left: 2px solid var(--blue); }
+
 /* ─── CONFIG SCREEN ─── */
 .cfg-screen { flex: 1; display: flex; align-items: center; justify-content: center; padding: 24px; background: var(--bg); }
 .cfg-card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: 20px; padding: 28px; width: 100%; max-width: 380px; }
@@ -289,9 +335,12 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
             <div class="chip" onclick="setMode(this,'plan')">📋 План</div>
             <div class="chip" onclick="setMode(this,'ad')">📣 Реклама</div>
           </div>
-          <button class="send-btn" id="taskSendBtn" onclick="sendTask()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-          </button>
+          <div style="display:flex;gap:6px;align-items:center">
+            <div class="voice-btn" id="voiceBtn" onclick="toggleVoice()" title="Голосовое сообщение">🎤</div>
+            <button class="send-btn" id="taskSendBtn" onclick="sendTask()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -329,7 +378,98 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
   <!-- 3. ИНТЕГРАЦИИ -->
   <div class="screen" id="s-integrations">
     <div class="scroll">
-      <div class="sec-lbl">Подключения</div>
+      <div class="sec-lbl">Социальные сети</div>
+      <div class="soc-grid">
+        <div class="soc-card" id="intInstagram">
+          <div class="soc-head">
+            <div class="soc-ico" style="background:#3a1a2a">📷</div>
+            <div><div class="soc-name">Instagram</div><div class="soc-status off" id="igStatus">Не подключён</div></div>
+            <div class="toggle soc-toggle" id="toggleIG" onclick="toggleSoc('IG')"></div>
+          </div>
+          <div class="int-fields" id="fieldsIG" style="display:none">
+            <input class="int-input" id="igToken" placeholder="Access Token" type="password">
+            <input class="int-input" id="igUserId" placeholder="Instagram User ID">
+            <div class="int-save-btn" onclick="saveSoc('IG')">Подключить</div>
+            <div class="int-desc">Агенты смогут отвечать в Direct, публиковать Stories и посты от вашего имени.</div>
+          </div>
+        </div>
+        <div class="soc-card" id="intVK">
+          <div class="soc-head">
+            <div class="soc-ico" style="background:#1a2a3a">🅰️</div>
+            <div><div class="soc-name">ВКонтакте</div><div class="soc-status off" id="vkStatus">Не подключён</div></div>
+            <div class="toggle soc-toggle" id="toggleVK" onclick="toggleSoc('VK')"></div>
+          </div>
+          <div class="int-fields" id="fieldsVK" style="display:none">
+            <input class="int-input" id="vkToken" placeholder="VK Access Token" type="password">
+            <input class="int-input" id="vkGroupId" placeholder="ID группы (необязательно)">
+            <div class="int-save-btn" onclick="saveSoc('VK')">Подключить</div>
+            <div class="int-desc">Агенты смогут вести переписку в ВК, публиковать записи в группу, отвечать в комментариях.</div>
+          </div>
+        </div>
+        <div class="soc-card" id="intWhatsApp">
+          <div class="soc-head">
+            <div class="soc-ico" style="background:#0d3a26">💬</div>
+            <div><div class="soc-name">WhatsApp</div><div class="soc-status off" id="waStatus">Не подключён</div></div>
+            <div class="toggle soc-toggle" id="toggleWA" onclick="toggleSoc('WA')"></div>
+          </div>
+          <div class="int-fields" id="fieldsWA" style="display:none">
+            <input class="int-input" id="waToken" placeholder="WhatsApp Business API Token" type="password">
+            <input class="int-input" id="waPhone" placeholder="Номер телефона (+7...)">
+            <div class="int-save-btn" onclick="saveSoc('WA')">Подключить</div>
+            <div class="int-desc">Агенты ведут переписку с клиентами в WhatsApp Business, принимают голосовые, автоответы.</div>
+          </div>
+        </div>
+        <div class="soc-card" id="intDiscord">
+          <div class="soc-head">
+            <div class="soc-ico" style="background:#1a1a3a">🎮</div>
+            <div><div class="soc-name">Discord</div><div class="soc-status off" id="discordStatus">Не подключён</div></div>
+            <div class="toggle soc-toggle" id="toggleDiscord" onclick="toggleSoc('Discord')"></div>
+          </div>
+          <div class="int-fields" id="fieldsDiscord" style="display:none">
+            <input class="int-input" id="discordToken" placeholder="Bot Token" type="password">
+            <input class="int-input" id="discordChannel" placeholder="Channel ID">
+            <div class="int-save-btn" onclick="saveSoc('Discord')">Подключить</div>
+            <div class="int-desc">Агенты отвечают в Discord-сервере, модерируют, ведут переговоры от вашего имени.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-lbl">Биржа / Трейдинг</div>
+      <div class="bybit-card" id="intBybit">
+        <div class="bybit-head">
+          <div class="bybit-ico">₿</div>
+          <div>
+            <div class="bybit-name">Bybit</div>
+            <div class="bybit-sub" id="bybitStatus">Не подключён — введите API ключи</div>
+          </div>
+          <div class="toggle" id="toggleBybit" onclick="toggleSoc('Bybit')" style="margin-left:auto"></div>
+        </div>
+        <div class="int-fields" id="fieldsBybit" style="display:none">
+          <input class="int-input" id="bybitKey" placeholder="API Key" type="password">
+          <input class="int-input" id="bybitSecret" placeholder="API Secret" type="password">
+          <div style="display:flex;gap:6px">
+            <select class="int-input" id="bybitMode" style="flex:1">
+              <option value="testnet">Testnet (безопасно)</option>
+              <option value="mainnet">Mainnet (реальные деньги)</option>
+            </select>
+          </div>
+          <div class="int-save-btn" onclick="saveBybit()">Подключить биржу</div>
+          <div class="int-desc" style="color:var(--amber)">⚠️ Агент «Лёша» получит доступ к торговле. Используйте только ключи с разрешением на торговлю, без права вывода. Начните с Testnet.</div>
+        </div>
+        <div id="bybitBalances" style="display:none">
+          <div class="bybit-balance" id="bybitBalList"></div>
+          <div class="bybit-actions">
+            <button class="bybit-act-btn" onclick="bybitAgentAnalyze()">📊 Анализ рынка</button>
+            <button class="bybit-act-btn" onclick="bybitAgentTrade('buy')">🟢 Купить</button>
+            <button class="bybit-act-btn" onclick="bybitAgentTrade('sell')">🔴 Продать</button>
+            <button class="bybit-act-btn" onclick="bybitGetBalance()">🔄 Обновить</button>
+            <button class="bybit-act-btn danger" onclick="bybitAgentTrade('close')">✖ Закрыть позиции</button>
+          </div>
+          <div class="trade-log" id="tradeLog"></div>
+        </div>
+      </div>
+
+      <div class="sec-lbl">Telegram</div>
 
       <div class="int-card" id="intTgBot">
         <div class="int-row">
@@ -408,7 +548,17 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
     </div>
   </div>
 
-  <!-- 4. ЛОГ -->
+  <!-- 4. ИСТОРИЯ -->
+  <div class="screen" id="s-history">
+    <div class="hist-bar">
+      <input class="hist-inp" id="histSearch" placeholder="🔍 Поиск по сообщениям..." oninput="renderHistory(this.value)">
+    </div>
+    <div class="scroll" id="histList">
+      <div class="hist-empty">История пуста.<br>Начните диалог с агентами!</div>
+    </div>
+  </div>
+
+  <!-- 5. ЛОГ -->
   <div class="screen" id="s-log">
     <div class="scroll">
       <div class="sec-lbl">Журнал действий</div>
@@ -429,6 +579,10 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
     <div class="nav-item" id="nav-integrations" onclick="switchScreen('integrations')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
       Связи
+    </div>
+    <div class="nav-item" id="nav-history" onclick="switchScreen('history')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      История
     </div>
     <div class="nav-item" id="nav-log" onclick="switchScreen('log')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
@@ -1023,7 +1177,203 @@ function hireEmp() {
   switchScreen('tasks');
 }
 
-// ─── INTEGRATIONS ────────────────────────
+// ─── HISTORY ──────────────────────────────
+const HIST_KEY = 'holding_chat_history_v1';
+let fullHistory = []; // {role, name, role_, content, empId, ts}
+
+function loadHistory() {
+  try { fullHistory = JSON.parse(localStorage.getItem(HIST_KEY)||'[]'); } catch(e) { fullHistory=[]; }
+}
+function saveHistory() {
+  try { localStorage.setItem(HIST_KEY, JSON.stringify(fullHistory.slice(-500))); } catch(e){}
+}
+loadHistory();
+
+function renderHistory(query='') {
+  const list = document.getElementById('histList');
+  const q = query.trim().toLowerCase();
+  const items = q ? fullHistory.filter(m=>m.content.toLowerCase().includes(q)) : [...fullHistory].reverse();
+  if (!items.length) {
+    list.innerHTML = `<div class="hist-empty">${q?'Ничего не найдено по запросу «'+query+'»':'История пуста.<br>Начните диалог с агентами!'}</div>`;
+    return;
+  }
+  list.innerHTML = items.map(m=>{
+    const who = m.role==='user' ? '👤 Вы' : `${m.name||'?'} · ${m.role_||''}`;
+    const txt = q ? m.content.replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<mark>$1</mark>') : m.content;
+    const ts = m.ts ? new Date(m.ts).toLocaleString('ru',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
+    return `<div class="hist-item" onclick="jumpToTask(${JSON.stringify(m.content).replace(/"/g,'&quot;')})">
+      <div class="hist-item-role">${who}</div>
+      <div class="hist-item-text">${txt.slice(0,180)}${txt.length>180?'...':''}</div>
+      ${ts?`<div class="hist-item-time">${ts}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function jumpToTask(text) {
+  document.getElementById('taskInp').value = text;
+  switchScreen('tasks');
+  setTimeout(()=>document.getElementById('taskInp').focus(),100);
+}
+
+// ─── VOICE INPUT ──────────────────────────
+let voiceRecog = null, isRecording = false;
+
+function toggleVoice() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    alert('Ваш браузер не поддерживает голосовой ввод. Попробуйте Chrome.'); return;
+  }
+  if (isRecording) { stopVoice(); return; }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  voiceRecog = new SR();
+  voiceRecog.lang = 'ru-RU';
+  voiceRecog.continuous = false;
+  voiceRecog.interimResults = true;
+  const btn = document.getElementById('voiceBtn');
+  const inp = document.getElementById('taskInp');
+  voiceRecog.onstart = () => { isRecording=true; btn.classList.add('recording'); btn.textContent='⏹'; addSys('🎤 Слушаю...'); };
+  voiceRecog.onresult = e => {
+    let t=''; for(let i=e.resultIndex;i<e.results.length;i++) t+=e.results[i][0].transcript;
+    inp.value=t; autoH(inp);
+  };
+  voiceRecog.onend = () => { stopVoice(); if(inp.value.trim()) { addSys('🎤 Распознано: «'+inp.value.slice(0,60)+'»'); } };
+  voiceRecog.onerror = e => { addSys('❌ Ошибка голоса: '+e.error); stopVoice(); };
+  voiceRecog.start();
+}
+function stopVoice() {
+  isRecording=false;
+  document.getElementById('voiceBtn').classList.remove('recording');
+  document.getElementById('voiceBtn').textContent='🎤';
+  try { voiceRecog?.stop(); } catch(e){}
+}
+
+// ─── SOCIAL NETWORKS ──────────────────────
+const SOC = {
+  IG:      { token:'', userId:'', active:false },
+  VK:      { token:'', groupId:'', active:false },
+  WA:      { token:'', phone:'', active:false },
+  Discord: { token:'', channelId:'', active:false },
+  Bybit:   { key:'', secret:'', mode:'testnet', active:false }
+};
+
+try {
+  const s=JSON.parse(localStorage.getItem('holding_soc')||'{}');
+  Object.assign(SOC,s);
+  Object.keys(SOC).forEach(k=>{
+    if(SOC[k]?.active) {
+      const tog=document.getElementById('toggle'+k);
+      if(tog) tog.classList.add('on');
+      const st=document.getElementById(k.toLowerCase()+'Status')||document.getElementById(({IG:'igStatus',VK:'vkStatus',WA:'waStatus',Discord:'discordStatus',Bybit:'bybitStatus'})[k]);
+      if(st){st.textContent='Подключён ✓';st.className='soc-status on';}
+    }
+  });
+  if(SOC.Bybit?.active) { document.getElementById('bybitBalances').style.display=''; bybitGetBalance(); }
+} catch(e){}
+
+function toggleSoc(key) {
+  const fields=document.getElementById('fields'+key);
+  if(fields) fields.style.display = fields.style.display==='none'?'flex':'none';
+  if(key==='Bybit') { const bf=document.getElementById('fieldsBybit'); if(bf) bf.style.display=bf.style.display==='none'?'flex':'none'; }
+}
+
+function saveSoc(key) {
+  const map={IG:['igToken','igUserId'],VK:['vkToken','vkGroupId'],WA:['waToken','waPhone'],Discord:['discordToken','discordChannel']};
+  const fields=map[key];
+  if(!fields) return;
+  const vals=fields.map(id=>document.getElementById(id)?.value.trim()||'');
+  if(!vals[0]) { alert('Введите токен'); return; }
+  SOC[key]={ token:vals[0], [key==='IG'?'userId':key==='VK'?'groupId':key==='WA'?'phone':'channelId']:vals[1], active:true };
+  document.getElementById('toggle'+key).classList.add('on');
+  const statusId={IG:'igStatus',VK:'vkStatus',WA:'waStatus',Discord:'discordStatus'}[key];
+  const st=document.getElementById(statusId);
+  if(st){st.textContent='Подключён ✓';st.className='soc-status on';}
+  document.getElementById('fields'+key).style.display='none';
+  localStorage.setItem('holding_soc',JSON.stringify(SOC));
+  addLog('ok',`✅ ${key} подключён`,'Агенты могут переписываться от вашего имени');
+  addSys(`✅ ${key} подключён — агенты готовы к переписке`);
+}
+
+// ─── BYBIT INTEGRATION ────────────────────
+async function saveBybit() {
+  const key=document.getElementById('bybitKey').value.trim();
+  const secret=document.getElementById('bybitSecret').value.trim();
+  const mode=document.getElementById('bybitMode').value;
+  if(!key||!secret){alert('Введите API Key и Secret');return;}
+  SOC.Bybit={key,secret,mode,active:true};
+  localStorage.setItem('holding_soc',JSON.stringify(SOC));
+  document.getElementById('toggleBybit').classList.add('on');
+  document.getElementById('fieldsBybit').style.display='none';
+  addLog('run','🔌 Подключаюсь к Bybit...','');
+  await bybitGetBalance();
+}
+
+function bybitSign(params, secret) {
+  // HMAC-SHA256 signing for Bybit API v5
+  const ts = Date.now().toString();
+  const recv = '5000';
+  const queryStr = Object.keys(params).sort().map(k=>k+'='+params[k]).join('&');
+  return { ts, recv, queryStr };
+}
+
+async function bybitGetBalance() {
+  if(!SOC.Bybit?.active) return;
+  const base = SOC.Bybit.mode==='testnet' ? 'https://api-testnet.bybit.com' : 'https://api.bybit.com';
+  addLog('run','📊 Запрашиваю баланс Bybit...','');
+  try {
+    // Bybit v5 API with proper auth
+    const ts = Date.now().toString();
+    const apiKey = SOC.Bybit.key;
+    const params = `accountType=UNIFIED`;
+    const signStr = ts + apiKey + '5000' + params;
+    // Use SubtleCrypto for HMAC
+    const enc = new TextEncoder();
+    const keyData = await crypto.subtle.importKey('raw',enc.encode(SOC.Bybit.secret),{name:'HMAC',hash:'SHA-256'},false,['sign']);
+    const sigBuf = await crypto.subtle.sign('HMAC',keyData,enc.encode(signStr));
+    const sig = Array.from(new Uint8Array(sigBuf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    const r = await fetch(`${base}/v5/account/wallet-balance?${params}`,{
+      headers:{'X-BAPI-API-KEY':apiKey,'X-BAPI-SIGN':sig,'X-BAPI-TIMESTAMP':ts,'X-BAPI-RECV-WINDOW':'5000'}
+    });
+    const data = await r.json();
+    if(data.retCode===0) {
+      const coins = data.result?.list?.[0]?.coin || [];
+      document.getElementById('bybitBalances').style.display='';
+      document.getElementById('bybitStatus').textContent='Подключён ✓ · '+SOC.Bybit.mode;
+      const balHtml = coins.filter(c=>parseFloat(c.walletBalance||0)>0).slice(0,6).map(c=>
+        `<div class="bybit-bal-item"><div class="bybit-bal-lbl">${c.coin}</div><div class="bybit-bal-val">${parseFloat(c.walletBalance||0).toFixed(4)}</div></div>`
+      ).join('');
+      document.getElementById('bybitBalList').innerHTML = balHtml || '<div style="font-size:12px;color:var(--text3);padding:8px">Баланс пуст</div>';
+      addLog('ok','✅ Баланс Bybit получен','');
+    } else {
+      addLog('error','❌ Bybit: '+data.retMsg,'retCode: '+data.retCode);
+    }
+  } catch(e) { addLog('error','❌ Ошибка Bybit',e.message); }
+}
+
+function addTradeLog(type, text) {
+  const item=document.createElement('div'); item.className='trade-item '+type;
+  item.innerHTML=`<span>${text}</span><span style="color:var(--text3)">${new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})}</span>`;
+  const log=document.getElementById('tradeLog'); log.prepend(item);
+  while(log.children.length>20) log.removeChild(log.lastChild);
+}
+
+async function bybitAgentAnalyze() {
+  const emp = employees.find(e=>e.id===8)||employees[0]; // Лёша аналитик
+  const task = `Проанализируй текущий рынок криптовалют на Bybit. Аккаунт подключён (${SOC.Bybit.mode}). Дай рекомендации по торговле BTC, ETH. Укажи ключевые уровни поддержки/сопротивления.`;
+  document.getElementById('taskInp').value = task;
+  switchScreen('tasks');
+  setTimeout(()=>sendTask(),200);
+}
+
+async function bybitAgentTrade(action) {
+  if(action==='close') { if(!confirm('Закрыть все открытые позиции?')) return; }
+  const emp = employees.find(e=>e.id===8)||employees[0];
+  const actions={buy:'Открой длинную позицию (LONG) по BTC на Bybit с разумным размером из моего баланса. Используй стоп-лосс.',sell:'Открой короткую позицию (SHORT) по BTC на Bybit. Используй риск-менеджмент.',close:'Закрой все открытые позиции на Bybit. Объясни P&L.'};
+  document.getElementById('taskInp').value = actions[action];
+  switchScreen('tasks');
+  setTimeout(()=>sendTask(),200);
+  addTradeLog(action==='buy'?'buy':action==='sell'?'sell':'info', `Агент: ${actions[action].slice(0,40)}...`);
+}
+
+// ─── SCREEN SWITCH (extended) ─────────────
 function toggleInt(key) {
   const card=document.getElementById('int'+key);
   card.classList.toggle('open');
