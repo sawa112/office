@@ -1,11 +1,10 @@
 // ═══════════════════════════════════════
 //  themes.js — Темы оформления
-//  Подключи в index.html перед </body>:
-//  <script src="themes.js"></script>
 // ═══════════════════════════════════════
 
 const Themes = {
   _key: 'holding_theme',
+  _current: 'dark',
 
   list: {
     dark: {
@@ -69,7 +68,6 @@ const Themes = {
     Object.entries(theme.vars).forEach(([k, v]) => root.style.setProperty(k, v));
     localStorage.setItem(this._key, name);
     this._current = name;
-    // Обновляем UI переключателя
     document.querySelectorAll('.theme-card').forEach(c => {
       c.classList.toggle('active', c.dataset.theme === name);
     });
@@ -77,6 +75,7 @@ const Themes = {
 
   init() {
     const saved = localStorage.getItem(this._key) || 'dark';
+    this._current = saved;
     this.apply(saved);
   },
 
@@ -91,56 +90,59 @@ const Themes = {
         <div style="font-size:13px;font-weight:600;color:var(--text)">${t.label.split(' ').slice(1).join(' ')}</div>
         <div style="font-size:11px;color:var(--text3);margin-top:2px">${t.desc}</div>
         <div style="display:flex;gap:4px;justify-content:center;margin-top:10px">
-          ${Object.values(t.vars).slice(0,4).map(c=>`<div style="width:16px;height:16px;border-radius:50%;background:${c};border:0.5px solid rgba(128,128,128,0.2)"></div>`).join('')}
+          ${['--bg','--blue','--green','--amber'].map(v=>`<div style="width:16px;height:16px;border-radius:50%;background:${t.vars[v]};border:0.5px solid rgba(128,128,128,0.2)"></div>`).join('')}
         </div>
       </div>
     `).join('');
-  },
-
-  _current: 'dark'
+  }
 };
 
-// CSS для активной карточки
-const THEMES_CSS = `
-.theme-card.active { border-color: var(--blue) !important; }
-.theme-card:hover { border-color: var(--border2) !important; }
-`;
+// ── CSS ──────────────────────────────────────────────────────────
+(function() {
+  if (document.getElementById('themesCSS')) return;
+  const s = document.createElement('style');
+  s.id = 'themesCSS';
+  s.textContent = `.theme-card.active{border-color:var(--blue)!important}.theme-card:hover{border-color:var(--border2)!important}`;
+  document.head.appendChild(s);
+})();
 
-// ── HTML экрана ──────────────────────────────────────────────────
-const THEMES_SCREEN_HTML = `
-<div class="screen" id="s-themes">
-  <div class="hdr">
-    <div class="hdr-logo">
-      <div class="hdr-icon">🎨</div>
-      <div><div class="hdr-title">Темы</div><div class="hdr-sub">Оформление</div></div>
-    </div>
-  </div>
-  <div style="flex:1;overflow-y:auto;padding:12px">
-    <div id="themesGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
-  </div>
-</div>`;
-
-// ── Навигация ────────────────────────────────────────────────────
-const THEMES_NAV_HTML = `
-<div class="nav-item" id="nav-themes" onclick="switchScreen('themes')">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20"/><path d="M2 12h20"/></svg>
-  Темы
-</div>`;
-
-// ── Инициализация ────────────────────────────────────────────────
+// ── Экран — добавляем ПЕРЕД .nav, а не после .app ────────────────
 function initThemes() {
-  // Добавить CSS
-  if (!document.getElementById('themesCSS')) {
-    const s = document.createElement('style');
-    s.id = 'themesCSS';
-    s.textContent = THEMES_CSS;
-    document.head.appendChild(s);
-  }
+  // 1. Экран — вставляем перед навигацией
   if (!document.getElementById('s-themes')) {
-    document.querySelector('.app').insertAdjacentHTML('beforeend', THEMES_SCREEN_HTML);
+    const nav = document.querySelector('.nav');
+    if (nav) {
+      nav.insertAdjacentHTML('beforebegin', `
+        <div class="screen" id="s-themes">
+          <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:12px">
+            <div class="sec-lbl" style="padding:4px 0 12px">Оформление</div>
+            <div id="themesGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
+          </div>
+        </div>
+      `);
+    }
   }
+
+  // 2. Кнопка в nav — только если ещё нет
   if (!document.getElementById('nav-themes')) {
-    document.querySelector('.nav').insertAdjacentHTML('beforeend', THEMES_NAV_HTML);
+    const nav = document.querySelector('.nav');
+    if (nav) {
+      nav.insertAdjacentHTML('beforeend', `
+        <div class="nav-item" id="nav-themes" onclick="switchScreen('themes')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 2a10 10 0 0 1 0 20"/>
+            <path d="M2 12h20"/>
+          </svg>
+          Темы
+        </div>
+      `);
+    }
   }
+
+  // 3. Применяем сохранённую тему
   Themes.init();
+
+  // 4. Рендерим карточки сразу
+  Themes.render();
 }
