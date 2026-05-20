@@ -566,6 +566,9 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
     </div>
   </div>
 
+  <!-- 6. ПСИХО-ПРОФИЛЬ -->
+  <div class="screen" id="s-psych"></div>
+
   <!-- BOTTOM NAV -->
   <div class="nav">
     <div class="nav-item active" id="nav-tasks" onclick="switchScreen('tasks')">
@@ -588,6 +591,10 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
       Лог
       <div class="nav-badge" id="logBadge" style="display:none">0</div>
+    </div>
+    <div class="nav-item" id="nav-psych" onclick="switchScreen('psych')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="12" r="10"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Профиль
     </div>
   </div>
 </div>
@@ -788,13 +795,14 @@ function init() {
 
 // ─── SCREEN SWITCH ────────────────────────
 function switchScreen(name) {
-  ['tasks','agents','integrations','log','analytics','inbox','briefing','themes'].forEach(s => {
+  ['tasks','agents','integrations','log','analytics','inbox','briefing','themes','psych'].forEach(s => {
     document.getElementById('s-'+s)?.classList.toggle('active', s===name);
     document.getElementById('nav-'+s)?.classList.toggle('active', s===name);
   });
   if (name==='agents') renderAgents();
   if (name==='analytics') Analytics.render();
   if (name==='inbox') Inbox.refresh();
+  if (name==='psych') renderPsychScreen();
 }
 
 // ─── TASK MODE ────────────────────────────
@@ -1181,7 +1189,7 @@ function hireEmp() {
 
 // ─── HISTORY ──────────────────────────────
 const HIST_KEY = 'holding_chat_history_v1';
-let fullHistory = []; // {role, name, role_, content, empId, ts}
+let fullHistory = [];
 
 function loadHistory() {
   try { fullHistory = JSON.parse(localStorage.getItem(HIST_KEY)||'[]'); } catch(e) { fullHistory=[]; }
@@ -1308,25 +1316,15 @@ async function saveBybit() {
   await bybitGetBalance();
 }
 
-function bybitSign(params, secret) {
-  // HMAC-SHA256 signing for Bybit API v5
-  const ts = Date.now().toString();
-  const recv = '5000';
-  const queryStr = Object.keys(params).sort().map(k=>k+'='+params[k]).join('&');
-  return { ts, recv, queryStr };
-}
-
 async function bybitGetBalance() {
   if(!SOC.Bybit?.active) return;
   const base = SOC.Bybit.mode==='testnet' ? 'https://api-testnet.bybit.com' : 'https://api.bybit.com';
   addLog('run','📊 Запрашиваю баланс Bybit...','');
   try {
-    // Bybit v5 API with proper auth
     const ts = Date.now().toString();
     const apiKey = SOC.Bybit.key;
     const params = `accountType=UNIFIED`;
     const signStr = ts + apiKey + '5000' + params;
-    // Use SubtleCrypto for HMAC
     const enc = new TextEncoder();
     const keyData = await crypto.subtle.importKey('raw',enc.encode(SOC.Bybit.secret),{name:'HMAC',hash:'SHA-256'},false,['sign']);
     const sigBuf = await crypto.subtle.sign('HMAC',keyData,enc.encode(signStr));
@@ -1358,7 +1356,6 @@ function addTradeLog(type, text) {
 }
 
 async function bybitAgentAnalyze() {
-  const emp = employees.find(e=>e.id===8)||employees[0]; // Лёша аналитик
   const task = `Проанализируй текущий рынок криптовалют на Bybit. Аккаунт подключён (${SOC.Bybit.mode}). Дай рекомендации по торговле BTC, ETH. Укажи ключевые уровни поддержки/сопротивления.`;
   document.getElementById('taskInp').value = task;
   switchScreen('tasks');
@@ -1367,72 +1364,26 @@ async function bybitAgentAnalyze() {
 
 async function bybitAgentTrade(action) {
   if(action==='close') { if(!confirm('Закрыть все открытые позиции?')) return; }
-  const emp = employees.find(e=>e.id===8)||employees[0];
-  const actions={buy:'Открой длинную позицию (LONG) по BTC на Bybit с разумным размером из моего баланса. Используй стоп-лосс.',sell:'Открой короткую позицию (SHORT) по BTC на Bybit. Используй риск-менеджмент.',close:'Закрой все открытые позиции на Bybit. Объясни P&L.'};
+  const actions={buy:'Открой длинную позицию (LONG) по BTC на Bybit с разумным размером из моего баланса. Используй стоп-лосс.',sell:'Открой короткую позицию (SHORT) по BTC на Bybit. Используй риск-менеджмент.',close:'Закрыть все открытые позиции на Bybit. Объясни P&L.'};
   document.getElementById('taskInp').value = actions[action];
   switchScreen('tasks');
   setTimeout(()=>sendTask(),200);
   addTradeLog(action==='buy'?'buy':action==='sell'?'sell':'info', `Агент: ${actions[action].slice(0,40)}...`);
 }
-  </script>
-  
-<!-- Instagram -->
-<div class="int-card" id="intInstagram">
-  <div class="int-head" onclick="toggleInt('Instagram')">
-    <div class="int-info">
-      <div class="int-icon" style="background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045)">📸</div>
-      <div>
-        <div class="int-name">Instagram</div>
-        <div class="int-status disconnected" id="instagramStatus">Не подключён</div>
-      </div>
-    </div>
-    <div class="toggle" id="toggleInstagram" onclick="event.stopPropagation()"></div>
-  </div>
-  <div class="int-body">
-    <div class="int-field"><label>Access Token</label>
-      <input id="igToken" type="password" placeholder="EAAxxxxxxx...">
-    </div>
-    <div class="int-field"><label>Page ID</label>
-      <input id="igPageId" placeholder="Ваш Instagram Page ID">
-    </div>
-    <button class="int-save" onclick="saveInt('Instagram')">Подключить</button>
-  </div>
-</div>
 
-<!-- WhatsApp -->
-<div class="int-card" id="intWhatsApp">
-  <div class="int-head" onclick="toggleInt('WhatsApp')">
-    <div class="int-info">
-      <div class="int-icon" style="background:#1a3d2b">💬</div>
-      <div>
-        <div class="int-name">WhatsApp Business</div>
-        <div class="int-status disconnected" id="whatsAppStatus">Не подключён</div>
-      </div>
-    </div>
-    <div class="toggle" id="toggleWhatsApp" onclick="event.stopPropagation()"></div>
-  </div>
-  <div class="int-body">
-    <div class="int-field"><label>Phone Number ID</label>
-      <input id="waPhoneId" placeholder="1234567890">
-    </div>
-    <div class="int-field"><label>Access Token</label>
-      <input id="waToken" type="password" placeholder="EAAxxxxxxx...">
-    </div>
-    <button class="int-save" onclick="saveInt('WhatsApp')">Подключить</button>
-  </div>
-</div>
-  
-// ─── SCREEN SWITCH (extended) ─────────────
+// ─── INTEGRATIONS (Telegram + Instagram + WhatsApp) ───────────────────────────
 function toggleInt(key) {
   const card=document.getElementById('int'+key);
-  card.classList.toggle('open');
+  if(card) card.classList.toggle('open');
 }
+
 function updateIntStatus(key, active) {
   const statusEl=document.getElementById(key.charAt(0).toLowerCase()+key.slice(1)+'Status');
   if(!statusEl) return;
   statusEl.textContent = active ? 'Подключён ✓' : 'Не подключён';
   statusEl.className = 'int-status ' + (active?'connected':'disconnected');
 }
+
 async function saveInt(key) {
   if (key==='TgBot') {
     INTEGRATIONS.TgBot.token = document.getElementById('tgBotToken').value.trim();
@@ -1450,6 +1401,7 @@ async function saveInt(key) {
         document.getElementById('intTgBot').classList.remove('open');
       } else { addLog('error','❌ Неверный токен',data.description||''); }
     } catch(e) { addLog('error','❌ Ошибка подключения',e.message); }
+
   } else if (key==='TgChannel') {
     INTEGRATIONS.TgChannel.token = document.getElementById('tgChannelToken').value.trim();
     INTEGRATIONS.TgChannel.channelId = document.getElementById('tgChannelId').value.trim();
@@ -1466,6 +1418,7 @@ async function saveInt(key) {
         document.getElementById('intTgChannel').classList.remove('open');
       } else { addLog('error','❌ Ошибка подключения канала',data.description||''); }
     } catch(e) { addLog('error','❌ Ошибка',e.message); }
+
   } else if (key==='Webhook') {
     INTEGRATIONS.Webhook.url = document.getElementById('webhookUrl').value.trim();
     if (!INTEGRATIONS.Webhook.url) { alert('Введите URL'); return; }
@@ -1474,36 +1427,28 @@ async function saveInt(key) {
     updateIntStatus('webhook', true);
     addLog('ok','✅ Webhook сохранён',INTEGRATIONS.Webhook.url);
     document.getElementById('intWebhook').classList.remove('open');
-  }
-  
 
-  // ← ВСТАВЬ ЗДЕСЬ
   } else if (key==='Instagram') {
-    INTEGRATIONS.Instagram = {
-      token: document.getElementById('igToken').value.trim(),
-      pageId: document.getElementById('igPageId').value.trim(),
-      active: false
-    };
-    if (!INTEGRATIONS.Instagram.token) { alert('Введите Access Token'); return; }
-    INTEGRATIONS.Instagram.active = true;
+    const token = document.getElementById('igToken').value.trim();
+    const pageId = document.getElementById('igPageId').value.trim();
+    if (!token) { alert('Введите Access Token'); return; }
+    INTEGRATIONS.Instagram = { token, pageId, active: true };
     document.getElementById('toggleInstagram').classList.add('on');
     updateIntStatus('instagram', true);
     addLog('ok','✅ Instagram подключён','Готов к работе');
     document.getElementById('intInstagram').classList.remove('open');
 
   } else if (key==='WhatsApp') {
-    INTEGRATIONS.WhatsApp = {
-      phoneId: document.getElementById('waPhoneId').value.trim(),
-      token: document.getElementById('waToken').value.trim(),
-      active: false
-    };
-    if (!INTEGRATIONS.WhatsApp.phoneId || !INTEGRATIONS.WhatsApp.token) { alert('Заполните все поля'); return; }
-    INTEGRATIONS.WhatsApp.active = true;
+    const phoneId = document.getElementById('waPhoneId').value.trim();
+    const token = document.getElementById('waToken').value.trim();
+    if (!phoneId || !token) { alert('Заполните все поля'); return; }
+    INTEGRATIONS.WhatsApp = { phoneId, token, active: true };
     document.getElementById('toggleWhatsApp').classList.add('on');
     updateIntStatus('whatsApp', true);
     addLog('ok','✅ WhatsApp Business подключён','Готов к отправке');
     document.getElementById('intWhatsApp').classList.remove('open');
   }
+
   localStorage.setItem('holding_integrations', JSON.stringify(INTEGRATIONS));
 }
 
@@ -1513,15 +1458,14 @@ function toggleAuto(el) { el.classList.toggle('on'); }
 function addLog(type, text, detail='') {
   logCount++;
   const badge=document.getElementById('logBadge');
-  badge.style.display='flex'; badge.textContent=logCount;
+  if(badge){badge.style.display='flex'; badge.textContent=logCount;}
   const item=document.createElement('div'); item.className='log-item';
   const ts=new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
   item.innerHTML=`<div class="log-dot ${type}"></div>
     <div class="log-text"><strong>${text}</strong>${detail?`<br><span style="color:var(--text3)">${detail}</span>`:''}</div>
     <div class="log-time">${ts}</div>`;
-  const list=document.getElementById('logList'); list.prepend(item);
-  // Keep last 50
-  while(list.children.length>50) list.removeChild(list.lastChild);
+  const list=document.getElementById('logList');
+  if(list){ list.prepend(item); while(list.children.length>50) list.removeChild(list.lastChild); }
 }
 
 // ─── MODALS ──────────────────────────────
@@ -1533,7 +1477,6 @@ function openModal(id) {
 }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-// Click outside modal to close
 document.querySelectorAll('.modal-bg').forEach(bg=>{
   bg.addEventListener('click',e=>{ if(e.target===bg) bg.classList.remove('open'); });
 });
@@ -1543,20 +1486,22 @@ if (API_KEY) {
   init();
 }
 </script>
-  <script src="memory.js"></script>
+
+<script src="memory.js"></script>
 <script src="crm.js"></script>
 <script src="kanban.js"></script>
 <script src="analytics.js"></script>
 <script src="inbox.js"></script>
 <script src="briefing.js"></script>
 <script src="themes.js"></script>
+<script src="psych.js"></script>
 <script>
 if (API_KEY) {
-  initKanban();
-  initAnalytics();
-  initInbox();
-  initBriefing();
-  initThemes();
+  if (typeof initKanban === 'function') initKanban();
+  if (typeof initAnalytics === 'function') initAnalytics();
+  if (typeof initInbox === 'function') initInbox();
+  if (typeof initBriefing === 'function') initBriefing();
+  if (typeof initThemes === 'function') initThemes();
 }
 </script>
 </body>
