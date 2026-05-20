@@ -945,21 +945,23 @@ function saveState() {
     dept:e._custom?e.dept:undefined, emoji:e._custom?e.emoji:undefined,
     baseSkills:e._custom?e.baseSkills:undefined, baseSystem:e._custom?e.baseSystem:undefined
   }));
-  localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+  Storage.set(SAVE_KEY, data);
 }
 function loadState() {
-  try {
-    const raw = localStorage.getItem(SAVE_KEY); if (!raw) return;
-    JSON.parse(raw).forEach(s => {
-      if (s._custom && !employees.find(e=>e.id===s.id)) {
-        employees.push({id:s.id,name:s.name,role:s.role,dept:s.dept,emoji:s.emoji,xp:s.xp,
-          baseSkills:s.baseSkills,learnedSkills:s.learnedSkills,knowledge:s.knowledge,baseSystem:s.baseSystem,_custom:true});
-      } else {
-        const emp = employees.find(e=>e.id===s.id);
-        if (emp) { emp.xp=s.xp||0; emp.learnedSkills=s.learnedSkills||[]; emp.knowledge=s.knowledge||[]; }
-      }
-    });
-  } catch(e) {}
+  Storage.get(SAVE_KEY, raw => {
+    if (!raw) return;
+    try {
+      raw.forEach(s => {
+        if (s._custom && !employees.find(e=>e.id===s.id)) {
+          employees.push({id:s.id,name:s.name,role:s.role,dept:s.dept,emoji:s.emoji,xp:s.xp,
+            baseSkills:s.baseSkills,learnedSkills:s.learnedSkills,knowledge:s.knowledge,baseSystem:s.baseSystem,_custom:true});
+        } else {
+          const emp = employees.find(e=>e.id===s.id);
+          if (emp) { emp.xp=s.xp||0; emp.learnedSkills=s.learnedSkills||[]; emp.knowledge=s.knowledge||[]; }
+        }
+      });
+    } catch(e) {}
+  });
 }
 loadState();
 
@@ -980,7 +982,24 @@ if (API_KEY) {
 }
 
 if (window.Telegram?.WebApp) { Telegram.WebApp.ready(); Telegram.WebApp.expand(); }
-
+// ── УНИВЕРСАЛЬНОЕ ХРАНИЛИЩЕ ──
+const Storage = {
+  set(key, value) {
+    const v = JSON.stringify(value);
+    if (window.Telegram?.WebApp?.CloudStorage) {
+      Telegram.WebApp.CloudStorage.setItem(key, v, ()=>{});
+    } else {
+      localStorage.setItem(key, v);
+    }
+  },
+  get(key, cb) {
+    if (window.Telegram?.WebApp?.CloudStorage) {
+      Telegram.WebApp.CloudStorage.getItem(key, (err, v) => cb(v ? JSON.parse(v) : null));
+    } else {
+      cb(JSON.parse(localStorage.getItem(key) || 'null'));
+    }
+  }
+};
 function init() {
   renderAgents();
   loadIntegrationToggles();
@@ -1573,7 +1592,7 @@ async function saveInt(key) {
     addLog('ok','✅ Webhook сохранён',INTEGRATIONS.Webhook.url);
     document.getElementById('intWebhook').classList.remove('open');
   }
-  localStorage.setItem('holding_integrations', JSON.stringify(INTEGRATIONS));
+  Storage.set('holding_integrations', INTEGRATIONS);
 }
 
 // Soc toggles
@@ -1649,22 +1668,22 @@ function addLog(type, text, detail='') {
 // ─── HISTORY ─────────────────────────────────
 function saveHistory() {
   const toSave = chatHistory.slice(-100);
-  try { localStorage.setItem('holding_history', JSON.stringify(toSave)); } catch(e) {}
+  Storage.set('holding_history', toSave);
 }
-
 function renderHistory(q) {
-  const stored = JSON.parse(localStorage.getItem('holding_history')||'[]');
-  const all = [...stored, ...chatHistory].filter((m,i,a)=>a.findIndex(x=>x===m)===i);
-  const filtered = q ? all.filter(m=>m.content&&m.content.toLowerCase().includes(q.toLowerCase())) : all;
-  const list = document.getElementById('histList');
-  if (!filtered.length) { list.innerHTML='<div class="hist-empty">Ничего не найдено</div>'; return; }
-  const hi = (t,q) => q ? t.replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'),m=>`<mark>${m}</mark>`) : t;
-  list.innerHTML = filtered.slice(-50).reverse().map(m=>`
-    <div class="hist-item" onclick="loadFromHistory(${JSON.stringify(m.content||'').replace(/"/g,'&quot;')})">
-      <div class="hist-item-role">${m.role==='user'?'👤 Вы':m.name||'Агент'} · ${m.role||''}</div>
-      <div class="hist-item-text">${hi(fmt((m.content||'').slice(0,120)),q)}</div>
-      <div class="hist-item-time">${m.ts||''}</div>
-    </div>`).join('');
+  Storage.get('holding_history', stored => {
+    const all = [...(stored||[]), ...chatHistory].filter((m,i,a)=>a.findIndex(x=>x===m)===i);
+    const filtered = q ? all.filter(m=>m.content&&m.content.toLowerCase().includes(q.toLowerCase())) : all;
+    const list = document.getElementById('histList');
+    if (!filtered.length) { list.innerHTML='<div class="hist-empty">Ничего не найдено</div>'; return; }
+    const hi = (t,q) => q ? t.replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'),m=>`<mark>${m}</mark>`) : t;
+    list.innerHTML = filtered.slice(-50).reverse().map(m=>`
+      <div class="hist-item" onclick="loadFromHistory(${JSON.stringify(m.content||'').replace(/"/g,'&quot;')})">
+        <div class="hist-item-role">${m.role==='user'?'👤 Вы':m.name||'Агент'} · ${m.role||''}</div>
+        <div class="hist-item-text">${hi(fmt((m.content||'').slice(0,120)),q)}</div>
+        <div class="hist-item-time">${m.ts||''}</div>
+      </div>`).join('');
+  });
 }
 
 function loadFromHistory(text) {
