@@ -1069,23 +1069,6 @@ function loadState() {
 }
 loadState();
 
-// ─── INIT ─────────────────────────────────────
-function saveApiKey() {
-  const k = document.getElementById('apiKeyInput').value.trim();
-  if (!k.startsWith('sk-')) { alert('Введите корректный ключ (начинается с sk-)'); return; }
-  API_KEY = k;
-  localStorage.setItem('holding_api_key', k);
-  document.getElementById('cfgScreen').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
-  init();
-}
-
-if (API_KEY) {
-  document.getElementById('cfgScreen').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
-}
-
-if (window.Telegram?.WebApp) { Telegram.WebApp.ready(); Telegram.WebApp.expand(); }
 // ─── SCREEN SWITCH ───────────────────────────
 function switchScreen(name) {
   ['tasks','agents','integrations','history','log','trader'].forEach(s => {
