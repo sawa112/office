@@ -982,7 +982,8 @@ if (API_KEY) {
 }
 
 if (window.Telegram?.WebApp) { Telegram.WebApp.ready(); Telegram.WebApp.expand(); }
-// ── УНИВЕРСАЛЬНОЕ ХРАНИЛИЩЕ ──
+<script>
+// ─── УНИВЕРСАЛЬНОЕ ХРАНИЛИЩЕ ──
 const Storage = {
   set(key, value) {
     const v = JSON.stringify(value);
@@ -1000,6 +1001,25 @@ const Storage = {
     }
   }
 };
+
+// ─── STATE ───────────────────────────────────
+let API_KEY = localStorage.getItem('holding_api_key') || '';
+let chatHistory = [];
+let busy = false;
+let currentMode = 'auto';
+let logCount = 0;
+let pendingPublishText = '';
+let mediaRecorder = null;
+let isRecording = false;
+let automationTimers = {};
+
+let INTEGRATIONS = {};
+Storage.get('holding_integrations', v => {
+  if (v) Object.assign(INTEGRATIONS, v);
+  ['TgBot','TgChannel','Webhook'].forEach(k => {
+    if (!INTEGRATIONS[k]) INTEGRATIONS[k] = { active: false };
+  });
+});
 function init() {
   renderAgents();
   loadIntegrationToggles();
