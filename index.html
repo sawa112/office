@@ -993,7 +993,7 @@ function init() {
 
 // ─── SCREEN SWITCH ───────────────────────────
 function switchScreen(name) {
-  ['tasks','agents','integrations','history','log'].forEach(s => {
+  ['tasks','agents','integrations','history','log','trader'].forEach(s => {
     document.getElementById('s-'+s)?.classList.toggle('active', s===name);
     document.getElementById('nav-'+s)?.classList.toggle('active', s===name);
   });
