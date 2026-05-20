@@ -608,7 +608,9 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
           <label style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em">Bot Token</label>
           <input class="int-input" id="tgBotToken" placeholder="123456:ABC-..." type="password">
           <label style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-top:4px">Chat ID (для ответов)</label>
-          <input class="int-input" id="tgBotChat" placeholder="-100xxxxxxxxx">
+          <input class="int-input" id="tgBotChat" placeholder="-100xxxxxxxxx (чат для ответов клиентам)">
+<label style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-top:4px">Мой личный Chat ID (для уведомлений)</label>
+<input class="int-input" id="tgOwnerChatId" placeholder="123456789">
           <div class="int-save-btn" onclick="saveInt('TgBot')">Сохранить и проверить</div>
           <div class="int-desc">Агент «Вова» получит доступ к боту: читает входящие, отвечает клиентам, отправляет уведомления.</div>
         </div>
