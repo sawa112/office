@@ -569,36 +569,121 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
   <!-- 6. ПСИХО-ПРОФИЛЬ -->
   <div class="screen" id="s-psych"></div>
 
-  <!-- BOTTOM NAV -->
-  <div class="nav">
-    <div class="nav-item active" id="nav-tasks" onclick="switchScreen('tasks')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+  <!-- DRAWER OVERLAY -->
+  <div id="drawerOverlay" onclick="closeDrawer()"
+    style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;backdrop-filter:blur(4px)"></div>
+
+  <!-- DRAWER MENU -->
+  <div id="drawer"
+    style="position:fixed;bottom:0;left:0;right:0;z-index:201;background:var(--bg2);border-radius:24px 24px 0 0;border-top:0.5px solid var(--border2);padding:16px 16px calc(16px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .3s cubic-bezier(.32,1,.32,1)">
+    <div style="width:38px;height:4px;border-radius:2px;background:var(--bg4);margin:0 auto 20px"></div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+
+      <div onclick="closeDrawer();switchScreen('integrations')" id="nav-integrations"
+        style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;border-radius:14px;background:var(--bg3);border:0.5px solid var(--border);cursor:pointer;transition:all .15s">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text2)" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        <span style="font-size:10px;font-weight:600;color:var(--text2)">Связи</span>
+      </div>
+
+      <div onclick="closeDrawer();switchScreen('history')" id="nav-history"
+        style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;border-radius:14px;background:var(--bg3);border:0.5px solid var(--border);cursor:pointer;transition:all .15s">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text2)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span style="font-size:10px;font-weight:600;color:var(--text2)">История</span>
+      </div>
+
+      <div onclick="closeDrawer();switchScreen('log')" id="nav-log"
+        style="position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;border-radius:14px;background:var(--bg3);border:0.5px solid var(--border);cursor:pointer;transition:all .15s">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text2)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <span style="font-size:10px;font-weight:600;color:var(--text2)">Лог</span>
+        <div id="logBadge" style="display:none;position:absolute;top:8px;right:8px;background:var(--red);color:#fff;font-size:9px;font-weight:700;width:16px;height:16px;border-radius:50%;align-items:center;justify-content:center;border:1.5px solid var(--bg2)">0</div>
+      </div>
+
+      <div onclick="closeDrawer();switchScreen('psych')" id="nav-psych"
+        style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;border-radius:14px;background:var(--bg3);border:0.5px solid var(--border);cursor:pointer;transition:all .15s">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text2)" stroke-width="2"><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="12" r="10"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span style="font-size:10px;font-weight:600;color:var(--text2)">Профиль</span>
+      </div>
+
+      <div onclick="closeDrawer();switchScreen('analytics')" id="nav-analytics"
+        style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;border-radius:14px;background:var(--bg3);border:0.5px solid var(--border);cursor:pointer;transition:all .15s">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text2)" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        <span style="font-size:10px;font-weight:600;color:var(--text2)">Аналитика</span>
+      </div>
+
+      <div onclick="closeDrawer();switchScreen('inbox')" id="nav-inbox"
+        style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;border-radius:14px;background:var(--bg3);border:0.5px solid var(--border);cursor:pointer;transition:all .15s">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text2)" stroke-width="2"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+        <span style="font-size:10px;font-weight:600;color:var(--text2)">Входящие</span>
+      </div>
+
+      <div onclick="closeDrawer();switchScreen('briefing')" id="nav-briefing"
+        style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;border-radius:14px;background:var(--bg3);border:0.5px solid var(--border);cursor:pointer;transition:all .15s">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text2)" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+        <span style="font-size:10px;font-weight:600;color:var(--text2)">Брифинг</span>
+      </div>
+
+      <div onclick="closeDrawer();switchScreen('themes')" id="nav-themes"
+        style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;border-radius:14px;background:var(--bg3);border:0.5px solid var(--border);cursor:pointer;transition:all .15s">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text2)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20"/><path d="M2 12h20"/></svg>
+        <span style="font-size:10px;font-weight:600;color:var(--text2)">Темы</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV — только 4 главных + кнопка ещё -->
+  <div class="nav" style="display:flex;background:var(--bg2);border-top:0.5px solid var(--border);height:64px;padding-bottom:env(safe-area-inset-bottom);flex-shrink:0">
+
+    <div class="nav-item active" id="nav-tasks" onclick="switchScreen('tasks')"
+      style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;color:var(--text3);font-size:10px;font-weight:600;padding-top:6px;transition:color .15s">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
       Задачи
     </div>
-    <div class="nav-item" id="nav-agents" onclick="switchScreen('agents')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+
+    <div class="nav-item" id="nav-agents" onclick="switchScreen('agents')"
+      style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;color:var(--text3);font-size:10px;font-weight:600;padding-top:6px;transition:color .15s">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       Агенты
     </div>
-    <div class="nav-item" id="nav-integrations" onclick="switchScreen('integrations')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+
+    <div onclick="openModal('modalHire')"
+      style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding-top:6px">
+      <div style="width:40px;height:40px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;margin-top:-18px;box-shadow:0 4px 16px rgba(91,141,247,.4)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </div>
+    </div>
+
+    <div class="nav-item" id="nav-integrations-main" onclick="switchScreen('integrations')"
+      style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;color:var(--text3);font-size:10px;font-weight:600;padding-top:6px;transition:color .15s">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
       Связи
     </div>
-    <div class="nav-item" id="nav-history" onclick="switchScreen('history')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      История
+
+    <div onclick="openDrawer()"
+      style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;color:var(--text3);font-size:10px;font-weight:600;padding-top:6px;transition:color .15s">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      Ещё
     </div>
-    <div class="nav-item" id="nav-log" onclick="switchScreen('log')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-      Лог
-      <div class="nav-badge" id="logBadge" style="display:none">0</div>
-    </div>
-    <div class="nav-item" id="nav-psych" onclick="switchScreen('psych')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="12" r="10"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-      Профиль
-    </div>
+
   </div>
 </div>
 
+<style>
+.nav-item.active { color: var(--blue) !important; }
+.nav-item.active svg { transform: translateY(-1px); }
+#drawer.open { transform: translateY(0) !important; }
+</style>
+
+<script>
+function openDrawer() {
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawerOverlay').style.display = 'block';
+}
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawerOverlay').style.display = 'none';
+}
+</script>
 <!-- ═══════════════ MODALS ═══════════════ -->
 <div class="modal-bg" id="modalHire">
   <div class="modal">
