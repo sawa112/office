@@ -1610,7 +1610,7 @@ function bybitAgentTrade(action) {
   const actions={buy:'Купить BTC по рынку',sell:'Продать BTC по рынку',close:'Закрыть все открытые позиции'};
   quickTask(`Агент Лёша: ${actions[action]}`);
 }
-  async function notifyOwner(text) {
+async function notifyOwner(text) {
   const { token, ownerChatId } = INTEGRATIONS.TgBot;
   if (!token || !ownerChatId) return;
   try {
