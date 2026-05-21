@@ -861,20 +861,33 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
 </div>
 
 <script>
+// ─── ХРАНИЛИЩЕ (первым!) ──────────────────────
+const Storage = {
+  set(key, value) {
+    const v = JSON.stringify(value);
+    if (window.Telegram?.WebApp?.CloudStorage) {
+      Telegram.WebApp.CloudStorage.setItem(key, v, ()=>{});
+    } else { localStorage.setItem(key, v); }
+  },
+  get(key, cb) {
+    if (window.Telegram?.WebApp?.CloudStorage) {
+      Telegram.WebApp.CloudStorage.getItem(key, (err, v) => cb(v ? JSON.parse(v) : null));
+    } else { cb(JSON.parse(localStorage.getItem(key) || 'null')); }
+  }
+};
+
 // ─── STATE ───────────────────────────────────
 let API_KEY = localStorage.getItem('holding_api_key') || '';
-let chatHistory = [];
-let busy = false;
-let currentMode = 'auto';
-let logCount = 0;
-let pendingPublishText = '';
-let mediaRecorder = null;
-let isRecording = false;
-let automationTimers = {};
+let chatHistory = [], busy = false, currentMode = 'auto';
+let logCount = 0, pendingPublishText = '';
+let mediaRecorder = null, isRecording = false, automationTimers = {};
 
-const INTEGRATIONS = JSON.parse(localStorage.getItem('holding_integrations') || '{}');
-['TgBot','TgChannel','Webhook'].forEach(k => {
-  if (!INTEGRATIONS[k]) INTEGRATIONS[k] = { active: false };
+let INTEGRATIONS = {};
+Storage.get('holding_integrations', v => {
+  if (v) Object.assign(INTEGRATIONS, v);
+  ['TgBot','TgChannel','Webhook'].forEach(k => {
+    if (!INTEGRATIONS[k]) INTEGRATIONS[k] = { active: false };
+  });
 });
 
 // ─── LEVELS ──────────────────────────────────
@@ -967,54 +980,35 @@ loadState();
 
 // ─── INIT ────────────────────────────────────
 function saveApiKey() {
-  const k = document.getElementById('apiKeyInput').value.trim();
-  if (!k || k.length < 10) { alert('Введите API ключ'); return; }
-  API_KEY = k;
-  localStorage.setItem('holding_api_key', k);
-  document.getElementById('cfgScreen').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
-  init();
-}
-
-if (API_KEY) {
-  document.getElementById('cfgScreen').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
+  try {
+    const k = document.getElementById('apiKeyInput').value.trim();
+    if (!k || k.length < 10) { alert('Введите API ключ'); return; }
+    API_KEY = k;
+    try { localStorage.setItem('holding_api_key', k); } catch(e) {}
+    try { Storage.set('holding_api_key', k); } catch(e) {}
+    document.getElementById('cfgScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    try { init(); } catch(e) { alert('Ошибка init: ' + e.message); }
+  } catch(e) {
+    alert('Ошибка: ' + e.message);
+  }
 }
 
 if (window.Telegram?.WebApp) { Telegram.WebApp.ready(); Telegram.WebApp.expand(); }
 
-// ─── УНИВЕРСАЛЬНОЕ ХРАНИЛИЩЕ ──────────────────
-const Storage = {
-  set(key, value) {
-    const v = JSON.stringify(value);
-    if (window.Telegram?.WebApp?.CloudStorage) {
-      Telegram.WebApp.CloudStorage.setItem(key, v, ()=>{});
-    } else {
-      localStorage.setItem(key, v);
+// Загружаем ключ — сначала из CloudStorage (TG), потом localStorage
+function tryAutoLogin() {
+  Storage.get('holding_api_key', v => {
+    const key = v || localStorage.getItem('holding_api_key') || '';
+    if (key && key.length > 10) {
+      API_KEY = key;
+      document.getElementById('cfgScreen').style.display = 'none';
+      document.getElementById('app').style.display = 'flex';
+      if (typeof init === 'function') init();
     }
-  },
-  get(key, cb) {
-    if (window.Telegram?.WebApp?.CloudStorage) {
-      Telegram.WebApp.CloudStorage.getItem(key, (err, v) => cb(v ? JSON.parse(v) : null));
-    } else {
-      cb(JSON.parse(localStorage.getItem(key) || 'null'));
-    }
-  }
-};
-
-// ─── STATE ────────────────────────────────────
-let API_KEY = localStorage.getItem('holding_api_key') || '';
-let chatHistory = [], busy = false, currentMode = 'auto';
-let logCount = 0, pendingPublishText = '';
-let mediaRecorder = null, isRecording = false, automationTimers = {};
-
-let INTEGRATIONS = {};
-Storage.get('holding_integrations', v => {
-  if (v) Object.assign(INTEGRATIONS, v);
-  ['TgBot','TgChannel','Webhook'].forEach(k => {
-    if (!INTEGRATIONS[k]) INTEGRATIONS[k] = { active: false };
   });
-});
+}
+tryAutoLogin();
 
 // ─── LEVELS ───────────────────────────────────
 const LEVELS = ['Стажёр','Джуниор','Специалист','Менеджер','Эксперт','Директор','Вице-президент'];
@@ -1090,21 +1084,6 @@ function loadState() {
 loadState();
 
 // ─── INIT ─────────────────────────────────────
-function saveApiKey() {
-  const k = document.getElementById('apiKeyInput').value.trim();
-  if (!k || k.length < 10) { alert('Введите API ключ'); return; }
-  API_KEY = k;
-  localStorage.setItem('holding_api_key', k);
-  document.getElementById('cfgScreen').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
-  init();
-}
-
-if (API_KEY) {
-  document.getElementById('cfgScreen').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
-}
-
 if (window.Telegram?.WebApp) { Telegram.WebApp.ready(); Telegram.WebApp.expand(); }
 // ─── SCREEN SWITCH ───────────────────────────
 function switchScreen(name) {
