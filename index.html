@@ -1011,20 +1011,6 @@ function tryAutoLogin() {
 tryAutoLogin();
 
 
-// ─── PERSISTENCE ──────────────────────────────
-function saveState() {
-  const data = employees.map(e => ({
-    id:e.id, xp:e.xp, learnedSkills:e.learnedSkills, knowledge:e.knowledge, _custom:e._custom||false,
-    name:e._custom?e.name:undefined, role:e._custom?e.role:undefined,
-    dept:e._custom?e.dept:undefined, emoji:e._custom?e.emoji:undefined,
-    baseSkills:e._custom?e.baseSkills:undefined, baseSystem:e._custom?e.baseSystem:undefined
-  }));
-  Storage.set(SAVE_KEY, data);
-}
-
-// ─── INIT ─────────────────────────────────────
-if (window.Telegram?.WebApp) { Telegram.WebApp.ready(); Telegram.WebApp.expand(); }
-// ─── SCREEN SWITCH ───────────────────────────
 function switchScreen(name) {
   ['tasks','agents','integrations','history','log','trader'].forEach(s => {
     document.getElementById('s-'+s)?.classList.toggle('active', s===name);
@@ -1394,7 +1380,7 @@ async function sendWebhook(text) {
 }
 
 // ─── AI AGENT CALL ───────────────────────────
-async function askEmp(emp, isInt=false) {
+async function askEmp(emp, isInt=false, customPrompt=null) {
   showTyping(emp);
   const ctx = buildCtx();
   const modeHint = {
@@ -1404,7 +1390,7 @@ async function askEmp(emp, isInt=false) {
     ad:'ЗАДАЧА: разработать рекламную кампанию.',
     analyze:'ЗАДАЧА: провести детальный анализ и дать рекомендации.'
   }[currentMode]||'';
-  const prompt = `${modeHint}\nИстория:\n${ctx}\n\nОтветь по своей роли. Дай КОНКРЕТНЫЙ результат в тегах <result>...</result>. Перед тегом — 1 предложение.`;
+  const prompt = customPrompt || `${modeHint}\nИстория:\n${ctx}\n\nОтветь по своей роли. Дай КОНКРЕТНЫЙ результат в тегах <result>...</result>. Перед тегом — 1 предложение.`;
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
@@ -1415,7 +1401,7 @@ async function askEmp(emp, isInt=false) {
     const reply = data.content?.[0]?.text || (data.error?`Ошибка: ${data.error.message}`:'...');
     rmTyping(emp.id);
     addBub(emp, reply, isInt);
-    chatHistory.push({role:'assistant',name:emp.name,role:emp.role,content:reply,empId:emp.id});
+    chatHistory.push({role:'assistant',name:emp.name,empRole:emp.role,content:reply,empId:emp.id});
     gainXP(emp, 1);
     saveHistory();
     return reply;
