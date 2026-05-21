@@ -319,11 +319,11 @@ const TRADER = {
   marketData: {},
   fngData: null,
   screenerTimer: null,
-  tradeJournal: JSON.parse(localStorage.getItem('trader_journal') || '[]'),
+  tradeJournal: []  /* loaded via Storage.get below */,
 
   // ── СОХРАНЕНИЕ ──
   saveJournal() {
-    localStorage.setItem('trader_journal', JSON.stringify(this.tradeJournal.slice(-300)));
+    Storage.set('trader_journal', JSON.stringify(this.tradeJournal.slice(-300)));
   },
 
   clearJournal() {
@@ -340,7 +340,7 @@ const TRADER = {
 
     try {
       // Bybit public ticker API (не требует ключей)
-      const res = await fetch('https://api.bybit.com/v5/market/tickers?category=linear&limit=5');
+      const res = await fetch('https://api.bybit.com/v5/market/tickers?category=linear');
       const data = await res.json();
 
       if (data.retCode === 0 && data.result?.list) {
@@ -818,7 +818,7 @@ ${trade.notes ? `Заметки: ${trade.notes}` : ''}
 
     if (this._priceContext) {
       sys += this._priceContext;
-      this._priceContext = null; // использовали — сбрасываем
+      // _priceContext kept for all agents in chain (reset after full chain in sendTask)
     }
 
     if (this.fngData) {
@@ -1027,6 +1027,16 @@ function switchScreen(name) {
 
 // Загружаем данные при старте приложения
 document.addEventListener('DOMContentLoaded', () => {
+  // Load journal from Storage
+  try {
+    const raw = localStorage.getItem('trader_journal');
+    if (raw) TRADER.tradeJournal = JSON.parse(raw);
+  } catch(e) {}
+  if (typeof Storage !== 'undefined' && Storage.get) {
+    Storage.get('trader_journal').then(val => {
+      if (val) try { TRADER.tradeJournal = JSON.parse(val); } catch(e) {}
+    }).catch(()=>{});
+  }
   setTimeout(() => {
     if (typeof API_KEY !== 'undefined' && API_KEY) {
       TRADER.loadMarketData();
