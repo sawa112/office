@@ -1841,6 +1841,18 @@ document.querySelectorAll('.modal-bg').forEach(bg=>{
   bg.addEventListener('click',e=>{ if(e.target===bg) bg.classList.remove('open'); });
 });
 
+// ─── INIT ────────────────────────────────────
+function init() {
+  renderAgents();
+  loadIntegrationToggles();
+  setTimeout(() => {
+    addSys('🚀 Холдинг запущен — все агенты онлайн');
+    Storage.get(SAVE_KEY, v => {
+      addSys(v ? '✅ Прогресс команды восстановлен' : '💡 Ставьте задачи — агенты выполнят реальные действия');
+    });
+  }, 80);
+}
+
 // ─── START ───────────────────────────────────
 if (API_KEY) { init(); }
 </script>
