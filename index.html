@@ -976,7 +976,7 @@ function loadState() {
     } catch(e) {}
   });
 }
-loadState();
+// loadState moved into init()
 
 // ─── INIT ────────────────────────────────────
 function saveApiKey() {
@@ -1021,23 +1021,6 @@ function saveState() {
   }));
   Storage.set(SAVE_KEY, data);
 }
-function loadState() {
-  Storage.get(SAVE_KEY, raw => {
-    if (!raw) return;
-    try {
-      raw.forEach(s => {
-        if (s._custom && !employees.find(e=>e.id===s.id)) {
-          employees.push({id:s.id,name:s.name,role:s.role,dept:s.dept,emoji:s.emoji,xp:s.xp,
-            baseSkills:s.baseSkills,learnedSkills:s.learnedSkills,knowledge:s.knowledge,baseSystem:s.baseSystem,_custom:true});
-        } else {
-          const emp = employees.find(e=>e.id===s.id);
-          if (emp) { emp.xp=s.xp||0; emp.learnedSkills=s.learnedSkills||[]; emp.knowledge=s.knowledge||[]; }
-        }
-      });
-    } catch(e) {}
-  });
-}
-loadState();
 
 // ─── INIT ─────────────────────────────────────
 if (window.Telegram?.WebApp) { Telegram.WebApp.ready(); Telegram.WebApp.expand(); }
@@ -1799,14 +1782,27 @@ document.querySelectorAll('.modal-bg').forEach(bg=>{
 
 // ─── INIT ────────────────────────────────────
 function init() {
-  renderAgents();
-  loadIntegrationToggles();
-  setTimeout(() => {
-    addSys('🚀 Холдинг запущен — все агенты онлайн');
-    Storage.get(SAVE_KEY, v => {
-      addSys(v ? '✅ Прогресс команды восстановлен' : '💡 Ставьте задачи — агенты выполнят реальные действия');
-    });
-  }, 80);
+  Storage.get(SAVE_KEY, raw => {
+    if (raw) {
+      try {
+        raw.forEach(s => {
+          if (s._custom && !employees.find(e=>e.id===s.id)) {
+            employees.push({id:s.id,name:s.name,role:s.role,dept:s.dept,emoji:s.emoji,xp:s.xp,
+              baseSkills:s.baseSkills,learnedSkills:s.learnedSkills,knowledge:s.knowledge,baseSystem:s.baseSystem,_custom:true});
+          } else {
+            const emp = employees.find(e=>e.id===s.id);
+            if (emp) { emp.xp=s.xp||0; emp.learnedSkills=s.learnedSkills||[]; emp.knowledge=s.knowledge||[]; }
+          }
+        });
+      } catch(e) {}
+    }
+    renderAgents();
+    loadIntegrationToggles();
+    setTimeout(() => {
+      addSys('🚀 Холдинг запущен — все агенты онлайн');
+      addSys(raw ? '✅ Прогресс команды восстановлен' : '💡 Ставьте задачи — агенты выполнят реальные действия');
+    }, 80);
+  });
 }
 
 // ─── START ───────────────────────────────────
