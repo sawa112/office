@@ -1,4 +1,3 @@
-cat > /home/claude/trader.js << 'ENDOFFILE'
 // ═══════════════════════════════════════════════════════
 //  МАКС — AI ТРЕЙДЕР v2  |  trader.js
 //  Подключить в index.html перед </body>:
@@ -1043,5 +1042,3 @@ window.traderTab = traderTab;
 window.traderAsk = traderAsk;
 
 console.log('📈 trader.js v2 загружен — Макс готов к работе');
-ENDOFFILE
-echo "Done: $(wc -l < /home/claude/trader.js) lines"

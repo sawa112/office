@@ -1010,50 +1010,6 @@ function tryAutoLogin() {
 }
 tryAutoLogin();
 
-// ─── LEVELS ───────────────────────────────────
-const LEVELS = ['Стажёр','Джуниор','Специалист','Менеджер','Эксперт','Директор','Вице-президент'];
-const XP_PER_LEVEL = 5;
-function getLvl(xp) {
-  const lv = Math.min(Math.floor(xp / XP_PER_LEVEL), LEVELS.length - 1);
-  return { lv: lv + 1, name: LEVELS[lv], progress: ((xp % XP_PER_LEVEL) / XP_PER_LEVEL) * 100, xp };
-}
-
-// ─── AGENT COLORS ─────────────────────────────
-const COLORS = [
-  {bg:'#0d1f4a',tc:'#5b8df7'},{bg:'#0a2a1c',tc:'#2de8a0'},{bg:'#1e1020',tc:'#a07df7'},
-  {bg:'#2a1a00',tc:'#f7b731'},{bg:'#1a0808',tc:'#f05050'},{bg:'#0a1a2a',tc:'#25c7d0'},
-  {bg:'#1a1a0a',tc:'#c0d040'},{bg:'#1a0a1a',tc:'#e078c0'},{bg:'#0a1a1a',tc:'#40d0c0'}
-];
-function gc(id) { return COLORS[id % COLORS.length]; }
-
-// ─── EMPLOYEES ────────────────────────────────
-const employees = [
-  {id:0,name:'Игорь',role:'Генеральный директор',dept:'Управление',emoji:'🏢',xp:8,baseSkills:['стратегия','координация','планирование'],learnedSkills:[],knowledge:[],
-   baseSystem:`Ты — Игорь, CEO холдинга по Telegram-каналам и продажам онлайн.
-ПРАВИЛА: Давай конкретный план, распределяй задачи по именам: Рита(контент), Кирилл(автоматизация), Даша(одежда), Толя(техника), Зина(заказы), Вова(боты), Настя(реклама), Лёша(аналитика).
-Формат: 1-2 предложения, затем план в <result>ПЛАН</result>.`},
-  {id:1,name:'Рита',role:'Контент-директор',dept:'Контент',emoji:'✍️',xp:6,baseSkills:['посты','контент-план','копирайтинг'],learnedSkills:[],knowledge:[],
-   baseSystem:`Ты — Рита, контент-директор Telegram-каналов. Всегда пиши ГОТОВЫЙ пост или план.
-Если задача — опубликовать в канал, добавь [PUBLISH_TO_CHANNEL] перед result.
-Формат: 1 предложение, затем [PUBLISH_TO_CHANNEL]<result>ГОТОВЫЙ ПОСТ</result>.`},
-  {id:2,name:'Кирилл',role:'SMM-автоматизация',dept:'Автоматизация',emoji:'⚙️',xp:4,baseSkills:['n8n','Make','Telegram API','автопостинг'],learnedSkills:[],knowledge:[],
-   baseSystem:`Ты — Кирилл, специалист по автоматизации SMM. Формат: 1 предложение, затем <result>СХЕМА ИЛИ КОД</result>.`},
-  {id:3,name:'Даша',role:'Менеджер продаж — одежда',dept:'Продажи',emoji:'👗',xp:5,baseSkills:['скрипты продаж','возражения','апсейл'],learnedSkills:[],knowledge:[],
-   baseSystem:`Ты — Даша, менеджер продаж одежды. Формат: 1 предложение, затем [SEND_VIA_BOT]<result>ТЕКСТ ДЛЯ КЛИЕНТА</result>.`},
-  {id:4,name:'Толя',role:'Менеджер продаж — техника',dept:'Продажи',emoji:'📱',xp:5,baseSkills:['техника','смартфоны','скрипты'],learnedSkills:[],knowledge:[],
-   baseSystem:`Ты — Толя, менеджер продаж техники. Формат: 1 предложение, затем <result>СКРИПТ / КАРТОЧКА</result>.`},
-  {id:5,name:'Зина',role:'Руководитель отдела заказов',dept:'Операции',emoji:'📦',xp:7,baseSkills:['CRM','заказы','логистика','регламенты'],learnedSkills:[],knowledge:[],
-   baseSystem:`Ты — Зина, руководитель отдела заказов. Формат: 1 предложение, затем <result>РЕГЛАМЕНТ / ЧЕК-ЛИСТ</result>.`},
-  {id:6,name:'Вова',role:'Разработчик ботов',dept:'Автоматизация',emoji:'🤖',xp:4,baseSkills:['aiogram','Python','Telegram Bot API'],learnedSkills:[],knowledge:[],
-   baseSystem:`Ты — Вова, разработчик Telegram-ботов. Формат: 1 предложение, затем <result>КОД БОТА</result>.`},
-  {id:7,name:'Настя',role:'Трафик-менеджер',dept:'Маркетинг',emoji:'📣',xp:5,baseSkills:['Telegram Ads','посевы','ВП','медиаплан'],learnedSkills:[],knowledge:[],
-   baseSystem:`Ты — Настя, трафик-менеджер. Формат: 1 предложение, затем <result>МЕДИАПЛАН / ОБЪЯВЛЕНИЕ</result>.`},
-  {id:8,name:'Лёша',role:'Аналитик',dept:'Аналитика',emoji:'📊',xp:6,baseSkills:['Tgstat','Telemetr','ROI','отчёты'],learnedSkills:[],knowledge:[],
-   baseSystem:`Ты — Лёша, аналитик Telegram-каналов. Формат: 1 предложение, затем <result>ОТЧЁТ / ТАБЛИЦА</result>.`},
-];
-
-const SAVE_KEY = 'holding_employees_v3';
-const deptOrder = ['Управление','Контент','Маркетинг','Продажи','Операции','Автоматизация','Аналитика'];
 
 // ─── PERSISTENCE ──────────────────────────────
 function saveState() {
